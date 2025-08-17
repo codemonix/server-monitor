@@ -19,6 +19,7 @@ async function run() {
     const usr = new User({ username, passwordHash: hashedPass, role: 'admin' });
     await usr.save();
     logger.info('Created admin user:', username );
+    await mongoose.disconnect();
     process.exit(0);
 }
 

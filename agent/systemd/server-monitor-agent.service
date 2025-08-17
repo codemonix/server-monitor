@@ -1,0 +1,17 @@
+[Unit]
+Description=Server Monitor Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/server-monitor-agent
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node /opt/server-monitor-agent/src/index.js
+Restart=always
+RestartSec=5
+User=nobody
+Group=nogroup
+
+[Install]
+WantedBy=multi-user.target
