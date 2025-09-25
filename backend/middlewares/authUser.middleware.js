@@ -1,9 +1,10 @@
 import { verifyAccess } from "../services/jwt.service.js";
-import logger from "../utils/logger.js";
+import debugLog from "../utils/logger.js";
 
 export default function authUser(requiredRole) {
     return ( req, res, next ) => {
         try {
+            debugLog("User authentication attempt");
             const h = req.headers.authorization || '' ;
             const token = h.startsWith('Bearer ') ? h.slice(7) : null ;
             if (!token ) return res.status(401).json({ error: 'missing token' });
@@ -12,7 +13,7 @@ export default function authUser(requiredRole) {
             req.user = payload;
             next();
         } catch (error) {
-            logger("User authentication failed:", error.message);
+            debugLog("User authentication failed:", error.message);
             return res.status(401).json({ error: 'invalid token' });
         }
     }

@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { listServers } from "../../services/api.js";
-import { error } from "winston";
 
 
 export const fetchServers = createAsyncThunk('servers/fetchServers', async () => {

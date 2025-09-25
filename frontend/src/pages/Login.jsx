@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import api, { setAuthToken } from '../services/api.js';
-import log from '../utils/log.js';
+import api from '../services/api.js';
+import { logger } from '../utils/log.js';
 
 export default function Login() {
-    const [ username, setUsername ] = useState('');
+    const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
     const [ err, setErr ] = useState('');
 
@@ -11,12 +11,13 @@ export default function Login() {
         e.preventDefault();
         setErr('');
         try {
-            const { data } = await api.post('/auth/login', { username, password });
-            localStorage.setItem(data.token);
+            const { data } = await api.post('/auth/login', { email, password });
+            logger.info("login successful:", data);
+            localStorage.setItem("srm.token",data.token);
             window.location.href = '/';
         } catch ( error ) {
             setErr(error.response?.data?.message || 'Login failed');
-            log.error("login failed:", error.message);
+            logger.error("login failed:", error.message);
         }
     }
 
@@ -24,8 +25,8 @@ export default function Login() {
         <div className="main-h-screen grid place-items-center bg-slate-950 text-white" >
             <form onSubmit={onSubmit} className="w-full max-w-sm bg-slate-900 p-6 rounded-xl space-y-4">
                 <h1 className="text-2xl font-bold text-center">Login</h1>
-                <input className="w-full p-2 rounded bg-slate-800" placeholder="Username" value={username} 
-                    onChange={e => setUsername(e.target.value)} />
+                <input className="w-full p-2 rounded bg-slate-800" placeholder="Email" value={email} 
+                    onChange={e => setEmail(e.target.value)} />
                 <input className="w-full p-2 rounded bg-slate-800" placeholder="Password" type="password" value={password} 
                     onChange={e => setPassword(e.target.value)} />
                 {err && <div className="text-red-500 text-sm">{err}</div>}

@@ -3,22 +3,26 @@
 import User from "../models/User.model.js";
 import RefreshToken from "../models/RefreshToken.model.js";
 import { signAccess, signRefresh, verifyRefresh } from "../services/jwt.service.js";
+import debugLog from "../utils/logger.js";
 
 
 
 export async function seedAdmin(req, res) {
     const { email, password } = req.body;
+    debugLog('Seeding admin user with email:', email);
     const user = await User.findOne({ email });
     if (!user) {
         const user = new User({ email, role: 'admin' });
         await user.setPassword(password);
         await user.save();
     }
-    return res.json({ ok: true });
+    return res.json({ ok: true, user: user });
 }
 
 export async function login(req, res) {
+    console.log(req.body);
     const { email, password } = req.body;
+    debugLog('Login attempt for email:', email);
     const user = await User.findOne({ email });
     if (!user || !(await user.validatePassword(password))) {
         return res.status(401).json({ error: 'Invalid email or password' });
@@ -27,6 +31,7 @@ export async function login(req, res) {
     const refresh = signRefresh(user);
     const rt = new RefreshToken({ user: user._id, token: refresh, expiresAt: new Date(Date.now() + (Number(process.env.REFRESH_TTL_DAYS || 30) * 864e5))})
     await rt.save();
+    debugLog('User logged in:', email);
     res.json({ access, refresh, user: { id: user._id, role: user.role, email: user.email } });
 }
 

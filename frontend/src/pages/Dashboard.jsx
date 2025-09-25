@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 export default function Dashboard() {
     const [servers, setServers] = useState([]);
     const navigate = useNavigate();
+    console.log("Dashboard render");
 
     useEffect(() => {
         api.get("/servers").then((res) => setServers(res.data));

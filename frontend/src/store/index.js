@@ -1,7 +1,7 @@
-import { configStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import serversReducer from './slices/serversSlice.js';
 
-const store = configStore({
+const store = configureStore({
     reducer:{
         servers: serversReducer,
     }

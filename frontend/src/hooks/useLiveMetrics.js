@@ -1,7 +1,6 @@
 import { use, useEffect, useMemo, useRef, useState } from "react";
 import { getServerMetrics } from "../services/api.js";
 import { logger } from "../utils/log.js";
-import { clear } from "winston";
 
 const WS_BASE = (window?.config?.WS_BASE) || ( (window?.config?.API_BASE || import.meta.env.VITE_API_BASE || 'http://localhost:4000').replace(/^http/, 'ws') )
 

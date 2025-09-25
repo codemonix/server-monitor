@@ -8,12 +8,12 @@ const clientsByServerId = new Map(); // ServerId -> WebSocket[]
 
 export function initWsHub(httpServer) {
     const wss = new WebSocketServer({ server: httpServer, path: '/ws/metrics' });
-    wss.on('connection', async ( we, req ) => {
+    wss.on('connection', async ( ws, req ) => {
         try {
             const { query } = url.parse(req.url, true);
             if (query.token) {
                 const agent = await authAgentJwt(query.token);
-                we.isAgent = true;
+                ws.isAgent = true;
                 ws.agentId = String(agent._id);
                 ws.on('message', async (message) => {
                     try {

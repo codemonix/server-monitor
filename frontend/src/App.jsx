@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import { Routes, Route, Link } from 'react-router-dom';
-import Dashboard from './pages/Dashboard.jsx';
-import Servers from './pages/Servers.jsx';
-import ServerDetail from './pages/ServerDetail.jsx';
-import './App.css'
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from './pages/Login.jsx';
+import Dashboard from './pages/Dashboard.jsx'
 
-function App() {
-  
-  return (
-    <div className='app'>
-      <header className='app-header' >
-        <div className='max' >
-          <Link to='/' className='brand'>Server Monitor</Link>
-          <nav>
-            <Link to='/' >Dashboard</Link>
-            <Link to='/servers' >Servers</Link>
-          </nav>
-        </div>
-      </header>
-      <main className='max'>
-        <Routers>
-          <Route path='/' element={<Dashboard />} />
-          <Route path='/servers' element={<Servers />} />
-          <Route path='/servers/:id' element={<ServerDetail />} />
-        </Routers>
-      </main>
-      <footer className='max muted small'>
-          API: {window?.config?.API_BASE || import.meta.env.VITE_API_BASE || 'http://localhost:4000'} • WS: {window?.config?.WS_BASE || 'ws://localhost:4000'}
-      </footer>
-    </div>
-  )
+export default function App(){
+    return (
+        <Routes >
+            <Route path="/login" element={< Login />} ></Route>
+            <Route path="/" element={<RequireAuth ><Dashboard /></RequireAuth>} ></Route>
+            <Route path="*" element={<Navigate to='/' />}/>
+        </Routes>
+    )
 }
 
-export default App
+function RequireAuth({ children }) {
+    // console.log("RequireAuth");
+    let token = null;
+    // console.log("token null:", token);
+    token = localStorage.getItem('srm.token');
+    // console.log("token:", token);
+    // console.log("type of token:", typeof token);
+    if (!token) {
+        console.log("User is not authenticated");
+        return <Navigate to="/login" replace />;
+    }
+    return children;
+}
