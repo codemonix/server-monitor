@@ -22,7 +22,10 @@ function getCallerInfo() {
         return `${file}:${line}`;
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error("Error getting caller info:", e);
+    return 'unknown';
+  }
   return 'unknown';
 }
 

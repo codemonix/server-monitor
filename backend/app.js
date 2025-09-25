@@ -4,7 +4,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import http from 'http';
 
 import authRoutes from './routes/auth.route.js';
 import agentRoutes from './routes/agent.route.js';

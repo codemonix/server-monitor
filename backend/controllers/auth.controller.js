@@ -24,6 +24,7 @@ export async function login(req, res) {
     const { email, password } = req.body;
     debugLog('Login attempt for email:', email);
     const user = await User.findOne({ email });
+    debugLog('User:', user);
     if (!user || !(await user.validatePassword(password))) {
         return res.status(401).json({ error: 'Invalid email or password' });
     }

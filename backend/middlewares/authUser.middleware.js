@@ -6,6 +6,7 @@ export default function authUser(requiredRole) {
         try {
             debugLog("User authentication attempt");
             const h = req.headers.authorization || '' ;
+            debugLog("Authorization header:", h);
             const token = h.startsWith('Bearer ') ? h.slice(7) : null ;
             if (!token ) return res.status(401).json({ error: 'missing token' });
             const payload = verifyAccess(token);

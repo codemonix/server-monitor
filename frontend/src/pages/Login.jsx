@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from '../services/api.js';
 import { logger } from '../utils/log.js';
+import { setAuthToken } from "../services/api.js";
 
 export default function Login() {
     const [ email, setEmail ] = useState('');
@@ -12,8 +13,8 @@ export default function Login() {
         setErr('');
         try {
             const { data } = await api.post('/auth/login', { email, password });
-            logger.info("login successful:", data);
-            localStorage.setItem("srm.token",data.token);
+            logger.debug("login successful:", data);
+            setAuthToken(data.access);
             window.location.href = '/';
         } catch ( error ) {
             setErr(error.response?.data?.message || 'Login failed');

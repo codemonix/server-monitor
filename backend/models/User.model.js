@@ -20,6 +20,9 @@ userSchema.methods.setPassword = async function (password) {
 }
 
 userSchema.methods.validatePassword = async function (password) {
+    if (!this.passwordHash) {
+        throw new Error("PasswordHash is missing for this user!!");
+    }
     return await bcrypt.compare(password, this.passwordHash);
 }
 
