@@ -6,6 +6,7 @@ import { signAccess, signRefresh, verifyRefresh } from "../services/jwt.service.
 import debugLog from "../utils/logger.js";
 
 
+const ttl = Number(process.env.ACCESS_TTL_MIN || 15) * 60 ; // in seconds
 
 export async function seedAdmin(req, res) {
     const { email, password } = req.body;
@@ -19,6 +20,13 @@ export async function seedAdmin(req, res) {
     return res.json({ ok: true, user: user });
 }
 
+/**
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ * @returns {{ access: string, ttl: number, user: { id: string, role: string, email: string } }}
+ */
+
 export async function login(req, res) {
     console.log(req.body);
     const { email, password } = req.body;
@@ -30,19 +38,67 @@ export async function login(req, res) {
     }
     const access = signAccess(user);
     const refresh = signRefresh(user);
-    const rt = new RefreshToken({ user: user._id, token: refresh, expiresAt: new Date(Date.now() + (Number(process.env.REFRESH_TTL_DAYS || 30) * 864e5))})
+
+    // Save refresh token in DB
+    const rt = new RefreshToken({ 
+        user: user._id, 
+        token: refresh, 
+        expiresAt: new Date(Date.now() + (Number(process.env.REFRESH_TTL_DAYS || 30) * 864e5))})
     await rt.save();
+
     debugLog('User logged in:', email);
-    res.json({ access, refresh, user: { id: user._id, role: user.role, email: user.email } });
+
+    // HttpOnly cookie for refresh token
+    res.cookie('refreshToken', refresh, { 
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: 'Strict', 
+        maxAge: Number(process.env.REFRESH_TTL_DAYS || 30) * 864e5,
+    });
+
+    res.json({ access, 
+        ttl, 
+        user: { id: user._id, role: user.role, email: user.email },
+    });
 }
 
+/**
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ * @returns { (access: string, ttl: number, user: { id: string, role: string, email: string }) }
+ */
+
 export async function refreshToken(req, res) {
-    const { refresh } = req.body;
-    if (!refresh) return res.status(400).json({ error: " missing refresh" });
-    const payload = verifyRefresh(refresh);
-    const rec = await RefreshToken.findOne({ token: refresh });
-    if (!rec || rec.expiresAt < new Date()) return res.status(401).json({ error: "Invalid or expired refresh token" });
-    const user = { _id: payload.sub, role: payload.role || 'viewer' };
-    const access = signAccess(user);
-    return res.json({ access });
+    try {
+        const token = req.cookies.refreshToken;
+        if (!token) return res.status(401).json({ error: 'Missing Refresh token'});
+
+        // look up token in db
+        const storedToken = await RefreshToken.findOne({ token });
+        if ( !storedToken || storedToken.expiresAt < new Date() ) {
+            return res.status(403).json({ error: "Invalid or Expired refresh token!" });
+        }
+
+        // verify token
+        const payload = verifyRefresh(token);
+        const user = await User.findById(payload.sub);
+        if (!user) return res.status(401).json({ error: 'User not found' });
+
+        // new access token
+        const access = signAccess(user);
+        debugLog('Access token refreshed for user:', user.email);
+        res.json({
+            access,
+            ttl,
+            user: { id: user._id, role: user.role, email: user.email },
+        });
+    } catch (error) {
+        if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
+            debugLog('Refresh token error:', error);
+            return res.status(403).json({ error: 'Invalid or expired refresh token' });
+        }
+        debugLog('Unexpected error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 }
