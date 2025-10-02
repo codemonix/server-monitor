@@ -1,35 +1,28 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from './pages/Login.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import { AuthProvider } from "./context/AuthProvider.jsx";
-import RequireAuth from "./components/RequireAuth.jsx";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AppLayout from "./components/layout/AppLayout.jsx";
+import ProtectedRoutes from "./components/auth/ProtectedRoutes.jsx";
+import LoginPage from "./pages/Login.jsx";
+import Logout from "./pages/Logout.jsx";
+import Dashboard from "./pages/Dashboard";
+import Servers from "./pages/Servers";
+import Agents from "./pages/Agents";
+import Settings from "./pages/Settings";
 
-export default function App(){
-    return (
-        <AuthProvider >
-            <Routes >
-                <Route path="/login" element={< Login />} ></Route>
-                <Route path="/" element={<RequireAuth ><Dashboard /></RequireAuth>} ></Route>
-                <Route path="*" element={<Navigate to='/' />}/>
-            </Routes>
-        </AuthProvider>
-    )
+function App() {
+  return (
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<ProtectedRoutes />}>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/servers" element={<Servers />} />
+            <Route path="/agents" element={<Agents />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/logout" element={<Logout />} />
+          </Route>
+        </Route>
+      </Routes>
+  );
 }
 
-// function RequireAuth({ children }) {
-//     // console.log("RequireAuth");
-//     let token = null;
-//     // console.log("token null:", token);
-//     token = localStorage.getItem('srm.token');
-//     // console.log("token:", token);
-//     // console.log("type of token:", typeof token);
-//     if (!token) {
-//         console.log("User is not authenticated");
-//         return <Navigate to="/login" replace />;
-//     }
-//     return children;
-// }
-
-function RedirectToCorrectPage() {
-    
-}
+export default App;

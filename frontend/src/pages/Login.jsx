@@ -1,38 +1,59 @@
-import React, { useState } from "react";
-import api from '../services/api.js';
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+// import api from '../services/api.js';
+import { Container, Box, TextField, Button, Typography } from "@mui/material";
 import { logger } from '../utils/log.js';
-import { setAuthToken } from "../services/api.js";
+import { useAuth } from "../context/AuthContext.jsx";
+// import { setAuthToken } from "../services/api.js";
 
 export default function Login() {
+    const { login } = useAuth();
+    const nav = useNavigate();
+    const loc = useLocation();
+    const from = loc.state?.from?.pathname || '/';
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
+    const [ busy, setBysy ] = useState(false);
     const [ err, setErr ] = useState('');
 
-    async function onSubmit(e) {
-        e.preventDefault();
+    const onSubmit = async (e) => {
+        e?.preventDefault();
+        setBysy(true);
         setErr('');
         try {
-            const { data } = await api.post('/auth/login', { email, password });
-            logger.debug("login successful:", data);
-            setAuthToken(data.access);
-            window.location.href = '/';
-        } catch ( error ) {
-            setErr(error.response?.data?.message || 'Login failed');
-            logger.error("login failed:", error.message);
+            const res = await login( email, password );
+            if ( res?.accessToken ) {
+                nav(from, { replace: true });
+            } else {
+                setErr("Invalid Credentials");
+            }
+        } catch (error) {
+            logger.error(error.message);
+            setErr("Login failes"); 
+        } finally {
+            setBysy(false);
         }
-    }
+    };
 
     return (
-        <div className="main-h-screen grid place-items-center bg-slate-950 text-white" >
-            <form onSubmit={onSubmit} className="w-full max-w-sm bg-slate-900 p-6 rounded-xl space-y-4">
-                <h1 className="text-2xl font-bold text-center">Login</h1>
-                <input className="w-full p-2 rounded bg-slate-800" placeholder="Email" value={email} 
-                    onChange={e => setEmail(e.target.value)} />
-                <input className="w-full p-2 rounded bg-slate-800" placeholder="Password" type="password" value={password} 
-                    onChange={e => setPassword(e.target.value)} />
-                {err && <div className="text-red-500 text-sm">{err}</div>}
-                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded">Sign in</button>
-            </form>
-        </div>
-    )
+        <Container maxWidth='xs' >
+            <Box mt={12} p={4} boxShadow={3} borderRadius={2} >
+                <Typography variant="h5" mb={2} >
+                    Sign in
+                </Typography>
+                <form onSubmit={onSubmit} >
+                    <TextField label="Email" fullWidth value={email} onChange={(e) => setEmail(e.target.value)} sx={{ mb: 2 }} />
+                    <TextField label="Password" type="password" fullWidth value={password} onChange={(e) => setPassword(e.target.value)} sx={{ mb: 2 }} />
+                    {err && (
+                        <Typography color="error" variant='body2' sx={{ mb: 1 }} >
+                            { err }
+                        </Typography>
+                    )}
+                    <Button disabled={busy} type='submit' variant='contained' fullWidth >
+                        { busy ? "Signing in..." : "Sign in" }
+                    </Button>
+                </form>
+            </Box>
+        </Container>
+    );
 }

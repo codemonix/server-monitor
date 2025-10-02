@@ -24,9 +24,15 @@ export async function ingestMetrics(req, res) {
 
 export async function listServers(req, res) {
     const agents = await Agent.find().select('name host ip tags status');
-    const out = agents.map( agent => ({ id: agent._id, name: agent.name, ip: agent.ip, 
-        tags: agent.tags, status: agent.status, type: 'linux' }))
-    return res.json(out);
+    // const out = agents.map( agent => ({ id: agent._id, name: agent.name, ip: agent.ip, 
+    //     tags: agent.tags, status: agent.status, type: 'linux' }))
+     const dummyServers = [
+        { id: "s1", name: "Server Alpha", status: "online", cpu: 12, mem: 32, uptime: "3 days" },
+        { id: "s2", name: "Server Beta", status: "warning", cpu: 78, mem: 64, uptime: "12 days" },
+        { id: "s3", name: "Container-DB", status: "offline", cpu: 0, mem: 0, uptime: "—" },
+        { id: "s4", name: "Edge-01", status: "online", cpu: 22, mem: 12, uptime: "5 hours" },
+        ];
+    return res.json(dummyServers);
 }
 
 export async function serverSummery(req, res) {

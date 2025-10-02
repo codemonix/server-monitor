@@ -102,3 +102,24 @@ export async function refreshToken(req, res) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+export async function logout(req, res) {
+    try {
+        const token = req.cookies.refreshToken;
+        if (token) {
+            await RefreshToken.deleteOne({ token });
+            debugLog("Refresh token removed for one device");
+        }
+
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+        });
+
+        return res.json({ ok: true });
+    } catch (err) {
+        debugLog("Logout Error:", err.message);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}

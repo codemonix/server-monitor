@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './context/AuthProvider.jsx';
 import './index.css';
 import store from './store/index.js';
 import App from './App.jsx';
@@ -10,7 +11,9 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <App />
+        <AuthProvider >
+          <App />
+        </AuthProvider>
       </BrowserRouter>
     </Provider>
   </StrictMode>,

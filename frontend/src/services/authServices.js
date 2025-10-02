@@ -1,6 +1,5 @@
 import { logger } from "../utils/log.js";
 import api from "./api.js";
-import { setAccessToken } from "../context/tokenManager.js";
 
 /**
  * 
@@ -13,7 +12,6 @@ export const loginApi = async ( email, password ) => {
     try {
         const { data } = await api.post('/auth/login', { email, password });
         logger.debug("login successful:", data.user.email);
-        setAccessToken(data.access);
         return { user: data.user, accessToken: data.access, ttl: data.ttl };
     } catch ( error ) {
         logger.error("login failed:", error.message);
@@ -29,7 +27,6 @@ export const refreshTokenApi = async () => {
     try {
         const { data } = await api.post('/auth/refresh-token');
         // console.log("refreshTokenApi -> token refreshed", data.access);
-        setAccessToken(data.access);
         return { accessToken: data.access, ttl: data.ttl, user: data.user };
     } catch ( error ) {
         logger.error("token refresh failed:", error.message);

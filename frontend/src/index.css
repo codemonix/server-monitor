@@ -71,3 +71,9 @@ button:focus-visible {
 @tailwind components;
 @tailwind utilities; */
 @import "tailwindcss";
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+}

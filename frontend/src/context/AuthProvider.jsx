@@ -90,7 +90,8 @@ export const AuthProvider = ({ children }) => {
 
     /**
      * @param {String} email 
-     * @param {String} password 
+     * @param {String} password
+     * @returns { {user: { id, role, email }, accessToken: string, ttl: number} }
      */
     const login =  async ( email, password ) => {
         const { user, accessToken, ttl } = await loginApi( email, password );
@@ -102,6 +103,7 @@ export const AuthProvider = ({ children }) => {
         setTokenManagerAccessToken(accessToken, ttl);
         setAccessTokenState(accessToken);
         setUserState(user);
+        return { user, accessToken, ttl };
     };
 
     const logout = async () => {
