@@ -1,0 +1,8 @@
+{
+    "backendBaseUrl": "http://localhost:4000/api",
+    "wsUrl": "http://localhost:4000/ws",
+    "agentName": "my-server-01",
+    "pollingInterval": 5000,
+    "batchMaxItems": 10,
+    "tags": ["prod", "web"]
+}

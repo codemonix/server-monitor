@@ -19,13 +19,13 @@ const Search = styled("div")(({ theme }) => ({
   maxWidth: 300,
   display: "flex",
   alignItems: "center",
-  padding: "0 8px",
+  padding: "0 10px",
 }));
 
 export default function TopBar({ onMenuClick }) {
   return (
     <AppBar position="fixed" sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}>
-      <Toolbar>
+      <Toolbar sx={{ bgcolor: '#606b7c'}}>
         <IconButton
           color="inherit"
           edge="start"

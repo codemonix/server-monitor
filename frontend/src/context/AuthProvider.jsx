@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { AuthContext } from "./AuthContext.jsx";
 import { loginApi, refreshTokenApi, logoutApi } from "../services/authServices.js";
-import { getAccessToken,setAccessToken as setTokenManagerAccessToken, clearAccessToken } from "./tokenManager.js";
+import { getAccessToken, setAccessToken as setTokenManagerAccessToken, clearAccessToken } from "./tokenManager.js";
 import { logger } from "../utils/log.js";
+import { useNavigate } from "react-router-dom";
 
 
 export const AuthProvider = ({ children }) => {
@@ -10,6 +11,7 @@ export const AuthProvider = ({ children }) => {
     const [ accessToken, setAccessTokenState ] = useState( null );
     const [ loading, setLoading ] = useState(true);
     const refresTimerRef = useRef(null);
+    const navigate = useNavigate();
 
     // try refresh on load
     useEffect(() => {
@@ -17,6 +19,7 @@ export const AuthProvider = ({ children }) => {
             try {
                 const { user, accessToken, ttl } = await refreshTokenApi();
                 console.log("AuthProvider -> initial", user );
+                
                 if ( accessToken && ttl ) {
                     setTokenManagerAccessToken(accessToken, ttl);
                     setAccessTokenState(accessToken);
@@ -26,13 +29,15 @@ export const AuthProvider = ({ children }) => {
                     clearAccessToken();
                     setAccessTokenState(null);
                     setUserState(null);
+                    navigate('/login', { replace: true });
                     logger.info("No valid token on initial refresh");
                 }
             } catch (error) {
                 clearAccessToken();
                 setAccessTokenState(null);
                 setUserState(null);
-                logger.info("Initial token refresh failed:", error.message);
+                navigate('/login', { replace: true });
+                logger.info("AuthProvider.js -> useEffect -> Initial token refresh failed:", error);
             } finally {
                 setLoading(false);
             }
@@ -86,7 +91,7 @@ export const AuthProvider = ({ children }) => {
                 refresTimerRef.current = null;
             }
         }
-    }, [ accessToken ]);
+    },[accessToken]);
 
     /**
      * @param {String} email 
@@ -121,7 +126,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user: userState, login, logout, loading }}>
+        <AuthContext.Provider value={{ user: userState, login, logout, loading, accessToken }}>
             {children}
         </AuthContext.Provider>
     )

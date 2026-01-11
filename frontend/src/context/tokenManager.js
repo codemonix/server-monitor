@@ -34,6 +34,7 @@ export const setAccessToken = ( token, ttlSeconds ) => {
  */
 
 export const getAccessToken = () => {
+    console.log("tokenManager -> getAccessToken -> accessToken:", accessToken)
     if (
         typeof accessToken !== 'string' ||
         !accessToken ||
