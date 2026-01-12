@@ -5,13 +5,16 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/server-monitor-agent
+ExecStart=/usr/bin/srm-agent
+EnvironmentFile=-/etc/srm-agent/config.env
 Environment=NODE_ENV=production
-ExecStart=/usr/bin/node /opt/server-monitor-agent/src/index.js
+
 Restart=always
-RestartSec=5
-User=nobody
-Group=nogroup
+RestartSec=10
+User=srm-agent
+Group=srm-agent
+NoNewPrivilages=true
+
 
 [Install]
 WantedBy=multi-user.target

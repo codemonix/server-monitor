@@ -1,0 +1,18 @@
+name: "srm-agent"
+arch: "amd64"
+paltform: "linux"
+version: "${VERSION}"
+section: "default"
+maintainer: "Saeid Monfared saeid@saeidmon.com"
+description: "Server Monitor Agent - Collect and send server metrics to Server Monitor backend"
+vendor: "Saeid Monfared"
+homepage: "https://www.saeidmon.com/server-monitor"
+license: "MIT"
+contents:
+  - src: ./dist/srm-agent-v*-linux-amd64
+    dst: /usr/bin/srm-agent
+# Service file
+  - src: ./systemd/server-monitor-agent.service
+    dst: /lib/systemd/system/srm-agent.service
+scripts:
+  postinstall: ./install/linux/postinstall.sh

@@ -20,6 +20,7 @@ pids
 .env.*.local
 
 # Build and runtime output
+agent/data
 dist/
 build/
 .cache/
@@ -45,3 +46,4 @@ coverage-final.json
 *.swo
 .idea/
 .vscode/
+agent_token.json
