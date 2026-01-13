@@ -54,10 +54,15 @@ jobs:
                 VERSION: ${{ steps.get_version.outputs.VERSION }}
               run: |
                 # Install nfpm
-                curl -sfL https://raw.githubusercontent.com/goreleaser/nfpm/master/scripts/install.sh | sh
+                echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+                sudo apt-get update
+                sudo apt-get install -y nfpm
 
                 # verify installation
                 nfpm --version
+
+                # Quick Check for previous step
+                ls -lh ./dist/
 
                 # Build .deb package
                 nfpm package --config nfpm.yaml --target ./dist/ --packager deb
