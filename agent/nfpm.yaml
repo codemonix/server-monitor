@@ -1,6 +1,6 @@
 name: "srm-agent"
 arch: "amd64"
-paltform: "linux"
+platform: "linux"
 version: "${VERSION}"
 section: "default"
 priority: "extra"
