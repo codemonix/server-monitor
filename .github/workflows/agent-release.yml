@@ -12,7 +12,8 @@ jobs:
             contents: write
 
         steps:
-            - uses: actions/checkout@v4
+            - name: Checkout Code
+              uses: actions/checkout@v4
 
             - name: Extract Version
               id: get_version
@@ -25,10 +26,17 @@ jobs:
                 cache: 'npm'
                 cache-dependency-path: './agent/package-lock.json'
 
+            - name: Install Dependencies
+              working-directory: ./agent
+              run: npm ci
+
+            - name: Run Vitest Units
+              working-directory: ./agent
+              run: npm test
+
             - name: Build Standalone Binary
               working-directory: ./agent
               run: |
-                npm ci
                 VERSION=${{ steps.get_version.outputs.VERSION }}
 
                 # Injecting version into version.txt
@@ -45,12 +53,16 @@ jobs:
               env:
                 VERSION: ${{ steps.get_version.outputs.VERSION }}
               run: |
-                curl -sfL https://gobinaries.com/goreleaser/nfpm | sh ./nfpm package --config nfpm.yaml --target ./dist/ --packager deb
+                # Install nfpm
+                curl -sfL https://gobinaries.com/goreleaser/nfpm | sh 
+                ./nfpm package --config nfpm.yaml --target ./dist/ --packager deb
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v1
               with:
                 name: Agent Release ${{ steps.get_version.outputs.VERSION }}
+                draft: false
+                prerelease: false
                 files: |
                     agent/dist/srm-agent-v*-linux-amd64
                     agent/dist/srm-agent-v*-windows-amd64.exe
