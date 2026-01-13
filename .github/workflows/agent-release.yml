@@ -54,8 +54,8 @@ jobs:
                 VERSION: ${{ steps.get_version.outputs.VERSION }}
               run: |
                 # Install nfpm
-                curl -sfL https://gobinaries.com/goreleaser/nfpm | sh 
-                ./nfpm package --config nfpm.yaml --target ./dist/ --packager deb
+                curl -sfL https://raw.githubusercontent.com/goreleaser/nfpm/master/scripts/install.sh | sh
+                ./bin/nfpm package --config nfpm.yaml --target ./dist/ --packager deb
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v1
