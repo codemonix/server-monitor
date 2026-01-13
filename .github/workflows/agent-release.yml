@@ -55,7 +55,12 @@ jobs:
               run: |
                 # Install nfpm
                 curl -sfL https://raw.githubusercontent.com/goreleaser/nfpm/master/scripts/install.sh | sh
-                ./bin/nfpm package --config nfpm.yaml --target ./dist/ --packager deb
+
+                # verify installation
+                nfpm --version
+
+                # Build .deb package
+                nfpm package --config nfpm.yaml --target ./dist/ --packager deb
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v1
