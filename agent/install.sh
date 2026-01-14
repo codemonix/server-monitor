@@ -7,9 +7,14 @@ TEMP_DEB="/tmp/srm-agent.deb"
 
 echo "🔎 Searching for the latest SRM Agent release..."
 
-DOWNLOAD_URL=$(curl -s -L https://api.github.com/repos/$REPO/releases/latest | \
-    grep "browser_download_url.*amd64.deb" | \
-    cut -d : -f 2,3 | tr -d \")
+DOWNLOAD_URL=$(curl -s https://api.github.com/repos/$REPO/releases/latest | grep "browser_download_url" | grep "amd64.deb" | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
+
+if [[ ! $DOWNLOAD_URL =~ ^https:// ]]; then
+    echo "❌ Error: Found invalid URL: $DOWNLOAD_URL"
+    echo "Make sure the 'https:' scheme isn't being cut off."
+    exit 1
+fi
+
 
 if [ -z "$DOWNLOAD_URL" ]; then
     echo "❌ Could not find the latest release. Exiting."
@@ -18,6 +23,11 @@ fi
 
 echo "📥 Downloading SRM Agent ..."
 wget --continue --show-progress -O "$TEMP_DEB" "$DOWNLOAD_URL"
+
+if [ ! -s "$TEMP_DEB" ]; then
+    echo "❌ Download failed or file is empty. Exiting."
+    exit 1
+fi
 
 echo "📦 Installing srm-agent..."
 sudo apt install -y "$TEMP_DEB"
