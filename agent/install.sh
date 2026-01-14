@@ -21,6 +21,9 @@ if [ -z "$DOWNLOAD_URL" ]; then
     exit 1
 fi
 
+echo "🧹 Cleaning up old download files..."
+sudo rm -f "$TEMP_DEB"
+
 echo "📥 Downloading SRM Agent ..."
 wget --continue --show-progress -O "$TEMP_DEB" "$DOWNLOAD_URL"
 

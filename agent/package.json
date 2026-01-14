@@ -7,6 +7,7 @@
     "srm-agent": "src/index.js"
   },
   "pkg": {
+    "esm": true,
     "assets": [
       "src/version.txt",
       "node_modules/systeminformation/**/*"
