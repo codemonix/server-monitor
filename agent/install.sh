@@ -7,7 +7,7 @@ TEMP_DEB="/tmp/srm-agent.deb"
 
 echo "🔎 Searching for the latest SRM Agent release..."
 
-DOWNLOAD_URL=$(curl -s https://api.github.com/repos/$REPO/releases/latest | \
+DOWNLOAD_URL=$(curl -s -L https://api.github.com/repos/$REPO/releases/latest | \
     grep "browser_download_url.*amd64.deb" | \
     cut -d : -f 2,3 | tr -d \")
 
@@ -17,7 +17,7 @@ if [ -z "$DOWNLOAD_URL" ]; then
 fi
 
 echo "📥 Downloading SRM Agent ..."
-wget -qO "$TEMP_DEB" "$DOWNLOAD_URL"
+wget --continue --show-progress -O "$TEMP_DEB" "$DOWNLOAD_URL"
 
 echo "📦 Installing srm-agent..."
 sudo apt install -y "$TEMP_DEB"
