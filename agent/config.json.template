@@ -1,0 +1,5 @@
+{
+    "backendBaseUrl": "http://localhost:4000/api",
+    "wsUrl": "http://localhost:4000/ws",
+    "enrollmentKey": "REPLACE_WITH_YOUR_KEY"
+}

@@ -39,14 +39,26 @@ jobs:
               run: |
                 VERSION=${{ steps.get_version.outputs.VERSION }}
 
+                mkdir -p bin dist
+
                 # Injecting version into version.txt
                 echo "$VERSION" >  src/version.txt
 
                 # Building binaries for Linux and Windows
-                npx pkg . --targets node18-linux-x64,node18-win-x64 --out-path ./dist/
+                npx pkg . --targets node18-linux-x64,node18-win-x64 --out-path ./bin/
 
-                mv ./dist/srm-agent-linux ./dist/srm-agent-v$VERSION-linux-amd64
-                mv ./dist/srm-agent-win.exe ./dist/srm-agent-v$VERSION-windows-amd64.exe
+                mv ./bin/srm-agent-linux ./bin/srm-agent
+                mv ./bin/srm-agent-win.exe ./bin/srm-agent.exe
+
+            - name: Package Windows Bundle (.zip)
+              working-directory: ./agent
+              run: |
+                VERSION=${{ steps.get_version.outputs.VERSION }}
+                mkdir -p windows-bundle
+                cp ./bin/srm-agent.exe config.json.template scripts/register.ps1 windows-bundle/
+
+                cd windows-bundle
+                zip -r ../dist/srm-agent-v$VERSION-windows-amd64.zip .
 
             - name: Build Linux Package (.deb)
               working-directory: ./agent
@@ -61,9 +73,6 @@ jobs:
                 # verify installation
                 nfpm --version
 
-                # Quick Check for previous step
-                ls -lh ./dist/
-
                 # Build .deb package
                 nfpm package --config nfpm.yaml --target ./dist/ --packager deb
 
@@ -74,6 +83,7 @@ jobs:
                 draft: false
                 prerelease: false
                 files: |
-                    agent/dist/srm-agent-v*-linux-amd64
-                    agent/dist/srm-agent-v*-windows-amd64.exe
                     agent/dist/*.deb
+                    agent/dist/*.zip
+                    agent/install.sh
+                    agent/install.ps1
