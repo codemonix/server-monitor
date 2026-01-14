@@ -24,5 +24,5 @@ chown -R srm-agent:srm-agent /etc/srm-agent
 # Reload systemd
 systemctl daemon-reload
 
-cho "✅ SRM Agent installed!"
+echo "✅ SRM Agent installed!"
 echo "👉 Edit /etc/srm-agent/config.json then run: sudo systemctl enable --now srm-agent"
