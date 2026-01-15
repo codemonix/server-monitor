@@ -9,7 +9,7 @@ export async function ingestMetrics(req, res) {
     logger(`metrics.controller.js -> Payload: ${req.body}`);
 
     try {
-        const insertedCount = await insertMetricPoints(agent._id, req.body);
+        const insertedCount = await insertMetricPoints( req.body);
         return res.json({ inserted: insertedCount });
     } catch (error) {
         console.error("metrics.controller.js -> ingestMetrics -> inserting metrics failed:", error.message);

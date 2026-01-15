@@ -2,7 +2,7 @@ import { sendPayload as wsSend, isConnected } from "./wsClient.js";
 import api from "./api.js";
 import { enqueueItem, queueSize, peekItem, dequeueItem } from "./diskQueue.js";
 import { cfg } from "./config.js";
-import { loadTokenFile } from "./tokenStore.js";
+// import { loadTokenFile } from "./tokenStore.js";
 
 const queueMaxFiles = cfg.diskQueueMaxFiles || 100;
 

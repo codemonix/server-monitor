@@ -19,8 +19,11 @@ function computePercent(used, total) {
 }
 
 
-export async function insertMetricPoints(payload) {
+export async function insertMetricPoints( payload ) {
     const points = Array.isArray(payload) ? payload : [payload];
+
+    console.log("metrics.service.js -> insertMetricPoints -> received payload:", payload);
+    console.log("metrics.service.js -> insertMetricPoints -> inserting points:", points);
 
     
 

@@ -82,6 +82,7 @@ function scheduleReconnect() {
 export function isConnected() {
     console.info(" wsClient.js -> isConnected check", (ws && ws.readyState === WebSocket.OPEN));
     return ws && ws.readyState === WebSocket.OPEN;
+    // return false;
 }
 
 export function sendPayload(payload) {

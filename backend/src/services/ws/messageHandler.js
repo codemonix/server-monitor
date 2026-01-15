@@ -4,7 +4,7 @@ import logger from "../../utils/logger.js";
 
 export function handleAgentMessage(agentId, message) {
     try {
-        logger("messageHandler.js -> handleAgentMessage -> message, agentId:", message);
+        logger("messageHandler.js -> handleAgentMessage -> message:", message);
         // const data = JSON.parse(message);
         // logger("messageHandler.js -> handleAgentMessage -> data:", data)
         if (message.type === "metrics") {
@@ -14,7 +14,7 @@ export function handleAgentMessage(agentId, message) {
                 agentId,
                 payload: message,
             });
-            insertMetricPoints(agentId, message);
+            insertMetricPoints(message);
         }
     } catch (error) {
         logger("messageHandler.js -> fail to handle message from agentId:", agentId, error.message);

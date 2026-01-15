@@ -5,7 +5,7 @@ $InstallDir = "C:\Program Files\SRM-Agent"
 $BinPath = "$InstallDir\srm-agent.exe"
 $ConfigPath = "$InstallDir\config.json"
 
-if (~not (Test-Path $ConfigPath)) {
+if (-not (Test-Path $ConfigPath)) {
     Write-Host "❌ Rename config.json.template to config.json first!" -ForegroundColor Red
     exit 1
 }
@@ -13,6 +13,7 @@ if (~not (Test-Path $ConfigPath)) {
 if (Get-Service $ServiceName -ErrorAction SilentlyContinue) {
     Stop-Service $ServiceName -Force
     sc.exe delete $ServiceName
+    Start-Sleep -Seconds 2
 }
 
 New-Service -Name $ServiceName`

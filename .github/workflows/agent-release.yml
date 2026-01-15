@@ -1,4 +1,4 @@
-name: Agent Release
+name: Agent Release (Bun)
 
 on:
     push:
@@ -19,20 +19,18 @@ jobs:
               id: get_version
               run: echo "VERSION=${GITHUB_REF#refs/tags/agent-v}" >> $GITHUB_OUTPUT
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v1
               with:
-                node-version: '18'
-                cache: 'npm'
-                cache-dependency-path: './agent/package-lock.json'
+                bun-version: latest
 
             - name: Install Dependencies
               working-directory: ./agent
-              run: npm ci
+              run: bun install
 
             - name: Run Vitest Units
               working-directory: ./agent
-              run: npm test
+              run: bun run test
 
             - name: Build Standalone Binary
               working-directory: ./agent
@@ -43,19 +41,18 @@ jobs:
 
                 # Injecting version into version.txt
                 echo "$VERSION" >  src/version.txt
-
-                # Building binaries for Linux and Windows
-                npx pkg . --targets node18-linux-x64,node18-win-x64 --out-path ./bin/
-
-                mv ./bin/srm-agent-linux ./bin/srm-agent
-                mv ./bin/srm-agent-win.exe ./bin/srm-agent.exe
+                
+                # Compile using package.json build script
+                bun run build:linux
+                bun run build:win
 
             - name: Package Windows Bundle (.zip)
               working-directory: ./agent
               run: |
                 VERSION=${{ steps.get_version.outputs.VERSION }}
                 mkdir -p windows-bundle
-                cp ./bin/srm-agent.exe config.json.template scripts/register.ps1 windows-bundle/
+                # Copy binaries, template and script
+                cp bin/srm-agent.exe config.json.template scripts/register.ps1 windows-bundle/
 
                 cd windows-bundle
                 zip -r ../dist/srm-agent-v$VERSION-windows-amd64.zip .

@@ -27,7 +27,7 @@ sudo rm -f "$TEMP_DEB"
 
 
 echo "📥 Downloading SRM Agent ..."
-wget --continue --show-progress -O "$TEMP_DEB" "$DOWNLOAD_URL"
+wget -q --show-progress --continue -O "$TEMP_DEB" "$DOWNLOAD_URL"
 
 if [ ! -s "$TEMP_DEB" ]; then
     echo "❌ Download failed or file is empty. Exiting."
@@ -35,7 +35,7 @@ if [ ! -s "$TEMP_DEB" ]; then
 fi
 
 echo "📦 Installing srm-agent..."
-sudo apt install -y "$TEMP_DEB"
+sudo apt install -y --reinstall "$TEMP_DEB"
 
 # Instructions
 echo ""

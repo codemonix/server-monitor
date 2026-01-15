@@ -1,4 +1,4 @@
-import { cfg } from "./config.js";
+// import { cfg } from "./config.js";
 import { ensureAuthenticated, refreshToken, enrollAgent } from "./auth.js";
 import { connectWs, closeWs } from "./wsClient.js";
 import { startScheduler, sotopScheduler } from "./metricsScheduler.js";
