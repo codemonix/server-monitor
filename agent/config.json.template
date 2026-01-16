@@ -1,5 +1,6 @@
 {
-    "backendBaseUrl": "http://localhost:4000/api",
+    "backendBaseUrl": "https://your-backend-url.com/",
     "wsUrl": "http://localhost:4000/ws",
-    "enrollmentKey": "REPLACE_WITH_YOUR_KEY"
+    "enrollmentKey": "your-enrollment-key"
+    "dataDir": "/etc/srm-agent/"
 }
