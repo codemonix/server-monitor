@@ -1,4 +1,4 @@
-import { logout } from '../controllers/auth.controller.js';
+
 import EnrollmentToken from '../models/EnrollmentToken.model.js';
 import logger from '../utils/logger.js';
 import crypto from 'crypto';
@@ -44,7 +44,7 @@ export async function verifyEnrollmentToken(token, consume = true) {
         }
 
         if (enrollment.expiresAt < new Date()) {
-            logout("enrollment.service.js -> Enrollment token expired");
+            logger("enrollment.service.js -> Enrollment token expired");
             return null;
         }
         if (consume) {

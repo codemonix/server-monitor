@@ -30,12 +30,31 @@ export async function loadTokenFile() {
     try {
         console.info('tokenStore,js -> loadTokenFile stateFilePath:', stateFilePath);
         const raw = await fs.readFile(stateFilePath, 'utf8');
+
+        // is the file empty?
+        if ( !raw || raw.trim() === '' ) {
+            console.warn("tokenStore -> token state file is empty");
+            cache = null;
+            return null;
+        }
+
         cache = JSON.parse(raw);
         console.log("Token data loaded from state file");
         return cache;
     } catch (error) {
-        if ( error.code === 'ENOENT' ) return null;
-        console.error("tokenStore -> error loading token file:", error.message);
+        if ( error.code === 'ENOENT' ){
+            console.warn("tokenStore -> no token state file found", error.message);
+            cache = null;
+            return null;
+        };
+
+        if ( error instanceof SyntaxError ) {
+            console.error("tokenStore -> token state file is corrupted or invalid JSON:", error.message);
+            cache = null;
+            return null;
+        }
+
+        console.error("tokenStore -> Unexpected error loading token state file:", error.message);
         return null;
     }
 }

@@ -71,15 +71,15 @@ export async function startAgent() {
     }, 10 * 60 * 1000); // every 10 minutes
 }
 
-async function gracefulSutdown() {
+async function gracefulShutdown() {
     console.info("index.js -> Shutting down agent...");
-    try { await startScheduler(); } catch {};
+    try { await sotopScheduler(); } catch {};
     try { await closeWs(); } catch {};
     process.exit(0);
 }
 
-process.on('SIGINT', gracefulSutdown);
-process.on('SIGTERM', gracefulSutdown);
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
 
 // Only run when this file is executed directly, not imported
 // if (import.meta.url === `file://${process.argv[1]}`) {
