@@ -2,5 +2,5 @@
     "backendBaseUrl": "https://your-backend-url.com/",
     "wsUrl": "http://localhost:4000/ws",
     "enrollmentKey": "your-enrollment-key",
-    "dataDir": "/etc/srm-agent/",
+    "dataDir": "/var/lib/srm-agent/"
 }
