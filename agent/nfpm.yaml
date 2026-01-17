@@ -25,10 +25,10 @@ contents:
     dst: /lib/systemd/system/srm-agent.service
 
 empty_dirs:
-  - /var/lib/srm-agent/data
-      mode: 0700
-      owner: srm-agent
-      group: srm-agent
+  - path: /var/lib/srm-agent/data
+    mode: 0700
+    owner: srm-agent
+    group: srm-agent
 
 overrides:
   deb:
