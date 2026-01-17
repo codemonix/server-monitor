@@ -12,10 +12,11 @@ echo "Setting up SRM Agent data directory..."
 mkdir -p /var/lib/srm-agent/data
 chown -R srm-agent:srm-agent /var/lib/srm-agent
 chmod 700 /var/lib/srm-agent/data
-chown root
+
 
 # Config file (settings) Owned by root read-only for srm-agent
 if [ -f /etc/srm-agent/config.json ]; then
+    echo " Setting permissions for config file..."
     chown root:root /etc/srm-agent/config.json
     chmod 644 /etc/srm-agent/config.json
 else
