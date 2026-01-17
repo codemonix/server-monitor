@@ -2,9 +2,42 @@
 import { ensureAuthenticated, refreshToken, enrollAgent } from "./auth.js";
 import { connectWs, closeWs } from "./wsClient.js";
 import { startScheduler, sotopScheduler } from "./metricsScheduler.js";
+import { cfg } from "./config.js";
+
+
+function start() {
+
+    console.log(`[Init] Starting SRM Agent v${cfg.agentVersion}`);
+    console.log(`[Init] Config Path: ${cfg.configPath}`);
+
+    if (!cfg.isValid) {
+        console.warn("===================================================");
+        console.warn(" [ATTENTION] AGENT NOT CONFIGURED ");
+        console.warn("===================================================");
+        console.warn(` Missing 'backendBaseUrl' or 'enrollmentKey'.`);
+        console.warn(` Please edit: ${cfg.configPath}`);
+        console.warn(" The agent will retry in 30 seconds...");
+
+        setTimeout(() => {
+            // TODO: hot reload config and restart agent
+            process.exit(1);
+        }, 30000);
+        return;
+    }
+    console.log(`[Init] Config valid. Backend: ${cfg.backendBaseUrl}`);
+    console.log(`[Init] Data Directory: ${cfg.dataDir}`);
+
+    startAgent().catch(err => {
+        console.error("index.js -> Fatal error during agent start:", err.message);
+        process.exit(1);
+    });
+}
 
 export async function startAgent() {
     console.info("index.js -> Starting agent...");
+    
+
+
     try {
         await ensureAuthenticated();
     } catch (error) {
@@ -49,9 +82,15 @@ process.on('SIGINT', gracefulSutdown);
 process.on('SIGTERM', gracefulSutdown);
 
 // Only run when this file is executed directly, not imported
-if (import.meta.url === `file://${process.argv[1]}`) {
-    startAgent().catch(err => {
-        logger.error("agent: fatal error", err.message);
-        process.exit(1);
-    });
+// if (import.meta.url === `file://${process.argv[1]}`) {
+//     start().catch(err => {
+//         logger.error("agent: fatal error", err.message);
+//         process.exit(1);
+//     });
+// }
+try {
+    start();
+} catch (error) {
+    console.error("index.js -> Fatal error during agent start:", error.message);
+    process.exit(1);
 }

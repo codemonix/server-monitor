@@ -1,27 +1,35 @@
 # Must be run as administrator
 
 $ServiceName = "SRMAgent"
+$ConfigDir = "C:\ProgramData\srm-agent"
 $InstallDir = "C:\Program Files\SRM-Agent"
-$BinPath = "$InstallDir\srm-agent.exe"
-$ConfigPath = "$InstallDir\config.json"
+$ExePath = "$InstallDir\srm-agent.exe"
 
-if (-not (Test-Path $ConfigPath)) {
-    Write-Host "❌ Rename config.json.template to config.json first!" -ForegroundColor Red
+
+if (-not (Test-Path $ExePath)) {
+    Write-Host "❌ Error: Agent binary not found at $ExePath" -ForegroundColor Red
     exit 1
 }
 
+
 if (Get-Service $ServiceName -ErrorAction SilentlyContinue) {
-    Stop-Service $ServiceName -Force
-    sc.exe delete $ServiceName
+    Write-Host " Removing existing service..."
+    Stop-Service $ServiceName -Force -ErrorAction SilentlyContinue
+    & sc.exe delete $ServiceName
     Start-Sleep -Seconds 2
 }
 
-New-Service -Name $ServiceName`
-    ~BinaryPathName "`"$BinPath`" --config `"$ConfigPath`"" `
+Write-Host " Registering $ServiceName ..."
+New-Service -Name $ServiceName `
+    ~BinaryPathName "`"$ExePath`"" `
     -DisplayName "SRM Monitoring Agent" `
+    -Description "Service for SRM Monitoring Agent system metric collector" `
     -StartupType Automatic
+
+
+& sc.exe failure $ServiceName reset= 86400 actions= restart/10000/restart/30000/restart/60000
 
 Start-Service $ServiceName
 
-Write-Host "✅ SRM Monitoring Agent Service Registered and Started" -ForegroundColor Green
+Write-Host " ✅ Service $ServiceName registered and started." -ForegroundColor Green
 exit 0

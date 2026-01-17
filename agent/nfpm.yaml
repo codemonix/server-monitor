@@ -12,12 +12,26 @@ license: "MIT"
 contents:
   - src: ./bin/srm-agent
     dst: /usr/bin/srm-agent
+    file_info:
+      mode: 0755
 
+# config template
   - src: ./config.json.template
     dst: /etc/srm-agent/config.json
     type: config
 
+# systemd service file
   - src: ./systemd/server-monitor-agent.service
     dst: /lib/systemd/system/srm-agent.service
-scripts:
-  postinstall: ./scripts/postinstall.sh
+
+empty_dirs:
+  - /var/lib/srm-agent/data
+      mode: 0700
+      owner: srm-agent
+      group: srm-agent
+
+overrides:
+  deb:
+    scripts:
+      postinstall: ./scripts/postinstall.sh
+      preremove: ./scripts/preremove.sh
