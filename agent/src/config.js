@@ -26,7 +26,7 @@ if (fs.existsSync(CONFIG_PATH)) {
     try {
         fileCfg = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
     } catch (e) {
-        console.error('Error loading config file(config.json):', e.message); 
+        console.error('config.js -> Error loading config file(config.json):', e.message); 
     }
 }
 // Read Version
