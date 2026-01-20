@@ -12,7 +12,9 @@ import AddAgentDialog from "../components/AddAgentDialog.jsx";
 
 export default function AgentsPage() {
     const dispatch = useDispatch();
-    const { items: agents =[] } = useSelector((state) => state.metrics);
+    const { items: allAgents =[], hiddenAgentIds = [] } = useSelector((state) => state.metrics);
+    const agents = allAgents.filter(agent => !hiddenAgentIds.includes(agent._id));
+    
     const loading = useSelector((state) => state.metrics.state === "loading");
 
     const [ selectedAgents, setSelectedAgents ] = useState({ ids: new Set() });
@@ -92,7 +94,7 @@ export default function AgentsPage() {
     const handleDeleteSelected = async () => {
         console.log("AgentsPage.jsx -> handleDeleteSelected -> selectedAgents:", selectedAgents);
         if (!selectedAgents || selectedAgents.ids.size === 0) return;
-        if (!window.confirm(`Delete ${selectedAgents.ids.size} selected agent(s)?`)) return;
+        if (!window.confirm(`Delete ${selectedAgents.ids.size} selected agent(s) and related metrics?`)) return;
 
         try {
             //delete in parallel and reload

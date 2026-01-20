@@ -124,3 +124,17 @@ export async function logout(req, res) {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
+
+
+export async function getUsers(req, res) {
+    try {
+        const users = await User.find({}, 'email role createdAt');
+        res.json(users);
+    } catch (error) {
+        debugLog("auth.controller.js -> getUsers -> error:", error.message);
+        res.status(500).json({ message: 'Failed to retrieve users' });
+    }
+}
+
+

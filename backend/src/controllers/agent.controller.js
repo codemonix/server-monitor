@@ -116,7 +116,7 @@ export async function deleteAgent(req, res) {
         if ( ws ) ws.close( 4003, "Agent deleted");
         removeAgent(agentId);
         logger("agent.controller.js -> Agent deleted successfully , DB % WS");
-        res.json({ message: "Agent deleted successfully" });
+        res.status(200).json({ message: "Agent and related metrics deleted successfully" });
     } catch (err) {
         logger("agent.controller.js -> failed to delete agent")
         res.status(500).json({ error: err.message });

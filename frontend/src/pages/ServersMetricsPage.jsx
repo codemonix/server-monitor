@@ -18,28 +18,35 @@ import { selectMetricRows } from "../redux/selectors/metricRowsSelector.js";
 export default function ServersMertricsPage() {
     const dispatch = useDispatch();
     const { filters, totalCount, loading, page: storePage, pageSize: storePageSize } = useSelector(state => state.metricPoints);
-    const { items: agents = [] } = useSelector(state => state.metrics);
+
+    // Get agents and hidden IDs
+    const { items: agents = [], hiddenAgentIds = [] } = useSelector(state => state.metrics);
     const rows = useSelector(selectMetricRows);
+
     console.log("ServersMertricsPage.jsx -> rows.length:", rows.length);
-    const selected = useSelector(state => state.metricPoints);
-    console.log("ServersMertricsPage.jsx -> selected:", selected);
+
+    // const selected = useSelector(state => state.metricPoints);
+    // console.log("ServersMertricsPage.jsx -> selected:", selected);
 
     const [ filterPanelOpen, setFilterPanelOpen ] = useState(false);
-
     const [ paginationModel, setPaginationModel ] = useState({ page: storePage, pageSize: storePageSize });
 
     useEffect(() => {
-        // useEffect main pageA
         dispatch(fetchServerStats());
     }, [dispatch]); 
 
     // auto-select agents
     useEffect(() => {
         // main page B
-        if (agents.length > 0 && (!filters.agentIds || filters.agentIds.length === 0)) {
-            dispatch(updateFilters({ agentIds: agents.map(a => a._id) }));
+        if (agents.length > 0)  {
+            // Visible IDs
+            const visibleIds = agents
+                .filter(a => !hiddenAgentIds.includes(a._id))
+                .map(a => a._id);
+
+            dispatch(updateFilters({ agentIds: visibleIds }));
         }
-    },[agents.length, dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
+    },[agents.length, hiddenAgentIds, dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         // main page C
@@ -98,7 +105,7 @@ export default function ServersMertricsPage() {
                 onClose={closeFilterPanel}
                 currentFilters={filters}
                 onApply={handleApplyFilters}
-                agents={agents}
+                agents={agents.filter(a => !hiddenAgentIds.includes(a._id))}
             />
         </Box>
     )

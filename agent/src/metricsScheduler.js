@@ -4,19 +4,39 @@ import { sendMetricsPayload, drainQueue } from "./transport.js";
 import { loadTokenFile } from "./tokenStore.js";
 
 
+
 let intervalId = null;
 
-export async function startScheduler() {
-    await doCollectSend();
+export async function startScheduler(intervalMs) {
+    let effectiveInterval = intervalMs || cfg.collectInterval;
+    
+    const tokenData = await loadTokenFile();
+    if ( tokenData?.config?.pollIntervalMs ) {
+        effectiveInterval = tokenData.config.pollIntervalMs;
+    }
+
+
+    await stopScheduler();
+    console.info(`metricsScheduler.js -> Starting metrics scheduler (effective interval: ${effectiveInterval} ms)`)
+    
+    // await doCollectSend();
+
 
     intervalId = setInterval( async () => {
+        console.log(`metricsScheduler.js -> setInterval -> collecting metrics every ${effectiveInterval}ms`)
+        // console.log(`metricsScheduler.js -> tokenData.config: ${}`)
+        console.dir(tokenData, { depth: null, colors: true })
         await doCollectSend();
-    }, cfg.collectInterval);
-    console.info(`metricsScheduler.js -> Metrics scheduler started (interval: ${cfg.collectInterval} ms)`);
+    }, effectiveInterval);
+
+    // console.info(`metricsScheduler.js -> Metrics scheduler started (interval: ${cfg.collectInterval} ms)`);
 }
 
-export async function sotopScheduler() {
-    if ( intervalId ) clearInterval(intervalId);
+export async function stopScheduler() {
+    if ( intervalId ) {
+        clearInterval(intervalId);
+        intervalId = null;
+    } 
 }
 
 

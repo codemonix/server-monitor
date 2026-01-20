@@ -89,7 +89,7 @@ export function sendPayload(payload) {
     if ( !isConnected() ) return false;
     try {
         ws.send(JSON.stringify(payload));
-        console.info(" wsClient.js -> payload sent over WebSocket:", payload);
+        // console.info(" wsClient.js -> payload sent over WebSocket:", payload);
         return true;
     } catch (error) {
         console.warn(" wsClient.js -> error sending payload over WebSocket:", error.message);

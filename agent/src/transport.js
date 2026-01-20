@@ -10,7 +10,7 @@ const queueMaxFiles = cfg.diskQueueMaxFiles || 100;
 export async function sendMetricsPayload(payload) {
     // payload should include agentId, ts, metrics...
     // 1) Try send over WS
-    console.info(" transport.js -> sendMetricsPayload , Attempting to send metrics payload", payload);
+    // console.info(" transport.js -> sendMetricsPayload , Attempting to send metrics payload", payload);
     console.info(" transport.js -> sendMetricsPayload , Checking WebSocket connection", isConnected());
     if ( isConnected() ) {
         console.info(" transport.js -> sendMetricsPayload , Sending payload over WebSocket");

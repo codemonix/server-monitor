@@ -6,6 +6,7 @@ const metricsSlice = createSlice({
     name: "metrics",
     initialState: {
         items: [],
+        hiddenAgentIds: [],
         status: "idle",
     },
     reducers: {
@@ -23,12 +24,9 @@ const metricsSlice = createSlice({
             } else {
                 state.items.push({ ...data });
             }
-
-            // const newMetric = action.payload;
-            // console.log("metricsSlice.js -> updateMetrics:", newMetric);
-            // const index = state.items.findIndex((m) => m.id === newMetric.id);
-            // if (index >= 0 ) state.items[index] = newMetric.id;
-            // else state.items.push(newMetric);
+        },
+        setHiddenAgentIds: (state, action) => {
+            state.hiddenAgentIds = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -48,5 +46,5 @@ const metricsSlice = createSlice({
     },
 });
 
-export const { updateMetrics } = metricsSlice.actions;
+export const { updateMetrics, setHiddenAgentIds } = metricsSlice.actions;
 export default metricsSlice.reducer;

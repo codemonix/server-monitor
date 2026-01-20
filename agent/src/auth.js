@@ -87,6 +87,16 @@ export async function refreshToken() {
     try {
         const res = await api.post('/agents/refresh-token', undefined, { _useRefreshToken: true, });
         const data = res.data;
+        const newConfig = data.config || {};
+
+        const currentPoll = tokenData.config?.pollIntervalMs ;
+        const newPoll = newConfig.pollIntervalMs;
+        const configChanged = newPoll && currentPoll && ( newPoll !== currentPoll );
+
+        console.log(" auth.js -> refreshToken -> api call -> data:", data)
+        
+        if (configChanged) console.info(`auth.js -> Config changed: Polling ${currentPoll}ms -> ${newPoll}ms}`);
+
         console.info("auth.js -> refreshToken -> api call -> data:", data)
         // expected res: { accessToken, refreshToken?, expiresAt?, config? }
         const merged = await updateTokenFile({
@@ -94,7 +104,7 @@ export async function refreshToken() {
             refreshToken: data.refreshToken || tokenData.refreshToken,
             expiresAt: data.expiresAt || tokenData.expiresAt,
             lastRefreshAt: new Date().toISOString(),
-            config: { ...(tokenData.config || {}), ...(res.config || {} )},
+            config: { ...(tokenData.config || {}), ...(data.config || {}) },
         });
         
         // schedule again 
@@ -106,7 +116,7 @@ export async function refreshToken() {
             }
         });
         console.info(" auth.js -> refreshToken -> refreshed successfully");
-        return merged;
+        return { ...merged, configChanged };
     } catch (error) {
         console.warn(" auth.js -> refreshToken -> token refresh failed:", error.message);
         if ( error.response && error.response.status >= 400 && error.response.status < 500 )  {

@@ -8,16 +8,16 @@ import ServerDetailsPanel from "../components/ServerDetailsPanel.jsx";
 import { Grid, Box, Typography, Slide, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close"
 import { logger } from "../utils/log.js";
-import { useOutletContext } from "react-router-dom";
+// import { useOutletContext } from "react-router-dom";
 import { fetchServerStats } from "../redux/thunks/metricsThunks.js";
 
 export default function Dashboard() {
-    const outletContext = useOutletContext() || {};
-    const { search = "", filter = "all" } = outletContext;
+    // const outletContext = useOutletContext() || {};
+    // const { search = "", filter = "all" } = outletContext;
     const dispatch = useDispatch();
-    const { items: servers } = useSelector((state) => state.metrics);
+    const { items: allServers, hiddenAgentIds } = useSelector((state) => state.metrics);
 
-    const state = useSelector((state) => state);
+    // const state = useSelector((state) => state); // Should be removed later
     
     
     // const [servers, setServers] = useState([]);
@@ -30,21 +30,25 @@ export default function Dashboard() {
     },[dispatch]);
     
     useWebsocketConnection()
-    console.log(" dashboard.jsx -> stor:", state);
+    
+    // filter out hiden servers
+    const servers = allServers.filter(server => !hiddenAgentIds.includes(server._id));
 
-    // filter and search
-    const filtered = servers.filter((server) => {
-        // logger.debug("Dashboard.jsx -> server:")
-        // console.log(server);
-        if (filter !== "all" && server.status !== filter) return false ;
-        if (!search) return true;
-        const normalized = search.toLowerCase();
-        return server.name.toLowerCase().includes(normalized) || server.id.toLowerCase().includes(normalized);
-    },[]);
+    const [ selected, setSelected ] = useState(null);
 
-    console.log("Dashboard.jsx -> filtered servers:", filtered);
+    // Enable this if you need auto select
+    useEffect(() => {
+        if (servers.length > 0 && !selected)  {
+            setSelected(servers[0]);
+        } else if (selected && hiddenAgentIds.includes(selected._id)) {
+            setSelected(servers.length > 0 ? servers[0] : null) 
+        }
+    }, [servers, selected, hiddenAgentIds]);
+    
 
-    const [ selected, setSelected ] = useState(filtered[0] || null);
+    console.log("Dashboard.jsx -> filtered servers:", selected);
+
+    // const [ selected, setSelected ] = useState(filtered[0] || null);
     return (
         <Box display='flex' flexDirection='column' minHeight='95vh' sx={{ bgcolor: 'grey.500', p: 1 }} >
             <Box flex={ selected ? '1 1 50%' : '1 1 auto'} overflow='auto' >
@@ -52,11 +56,14 @@ export default function Dashboard() {
                     Servers
                 </Typography>
                 <Grid container spacing={1} >
-                    {filtered.map((serv) => (
-                        <Grid key={serv._id}  >
+                    {servers.map((serv) => (
+                        <Grid key={serv._id} item xs={12} sm={6} lg={3} xl={2} >
                             <ServerCard server={serv} selected={selected?._id === serv._id} onClick={() => setSelected(serv)} />
                         </Grid>
                     ))}
+                    {servers.length === 0 && (
+                        <Typography color="white" sx={{ p: 2 }} >No agent selected or available.</Typography>
+                    )}
                 </Grid>
             </Box>
 
@@ -68,9 +75,6 @@ export default function Dashboard() {
                     bgcolor: 'grey.600',
                     borderTop: '1px solid',
                     borderColor: 'divider',
-                    // height: '20vh',
-                    // m: 10,
-                    // p: 10,
                     boxShadow: 3,
                     overflow: 'auto',
                 }} >
@@ -82,7 +86,6 @@ export default function Dashboard() {
                         <CloseIcon />
                     </IconButton>
                     <ServerDetailsPanel server={selected} />
-
                 </Box>
             </Slide>
         </Box>

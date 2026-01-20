@@ -1,4 +1,6 @@
 import Agent from '../models/Agent.model.js'
+import logger from '../utils/logger.js';
+import { deleteMetricsByAgentId } from './metrics.service.js';
 
 
 export async function getAgentsList() {
@@ -12,6 +14,22 @@ export async function getAgentsList() {
 }
 
 export async function delAgent(id) {
-    console.log("agent.service.js -> delAgent -> id:", id );
-    await Agent.findByIdAndDelete(id)
+
+    console.log("agent.service.js -> delAgent -> deleting agent and related metrics:", id );
+
+    try {
+
+        await deleteMetricsByAgentId(id);
+
+        const deletedAgents = await Agent.findByIdAndDelete(id);
+        if (!deletedAgents) {
+            throw new Error("Agent not found");
+        }
+
+        return deletedAgents;
+
+    } catch (error) {
+        console.log("agent.service.js -> delAgent -> error:", error.message);
+        throw error;
+    }
 }

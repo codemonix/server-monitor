@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import metricsReducer from "./slices/metricSlice.js";
 import serverDetailsReducer from "./slices/serverDetailsSlice.js";
 import metricPointsReducer from "./slices/metricsPointsSlice.js";
+import settingsReducer from "./slices/settingsSlice.js";
 
 
 const store = configureStore({
@@ -9,8 +10,9 @@ const store = configureStore({
         metrics: metricsReducer,
         serverDetails: serverDetailsReducer,
         metricPoints: metricPointsReducer,
+        settings: settingsReducer,
     },
-    // devTools: import.meta.env.MODE !== "production",
+    
 })
 
 export default store;

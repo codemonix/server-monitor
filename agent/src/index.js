@@ -1,7 +1,7 @@
 // import { cfg } from "./config.js";
 import { ensureAuthenticated, refreshToken, enrollAgent } from "./auth.js";
 import { connectWs, closeWs } from "./wsClient.js";
-import { startScheduler, sotopScheduler } from "./metricsScheduler.js";
+import { startScheduler, stopScheduler } from "./metricsScheduler.js";
 import { cfg } from "./config.js";
 
 
@@ -59,21 +59,28 @@ export async function startAgent() {
     // start metrics scheduler
     await startScheduler();
 
-    // schedule token refresh
-    setInterval( async () => {
+    const runRefreshLoop = async () => {
         try {
             console.info("index.js -> Refreshing access token...");
-            await refreshToken();
+            const result = await refreshToken();
+
+            // Restart Shcheduler if new Config
+            if (result.configChanged) {
+                console.info("index.js -> Config change detected, restarting scheduler...");
+                await startScheduler();
+            }
         } catch (error) {
             console.warn("index.js -> Token refresh failed:", error.message);
-            // dont crash, auth module clears token
         }
-    }, 10 * 60 * 1000); // every 10 minutes
+    }
+
+    // schedule token refresh
+    setInterval( runRefreshLoop, 10 * 60 * 1000); // every 10 minutes
 }
 
 async function gracefulShutdown() {
     console.info("index.js -> Shutting down agent...");
-    try { await sotopScheduler(); } catch {};
+    try { await stopScheduler(); } catch {};
     try { await closeWs(); } catch {};
     process.exit(0);
 }
@@ -81,13 +88,7 @@ async function gracefulShutdown() {
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
 
-// Only run when this file is executed directly, not imported
-// if (import.meta.url === `file://${process.argv[1]}`) {
-//     start().catch(err => {
-//         logger.error("agent: fatal error", err.message);
-//         process.exit(1);
-//     });
-// }
+
 try {
     start();
 } catch (error) {

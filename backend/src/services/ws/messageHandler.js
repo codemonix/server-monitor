@@ -4,7 +4,7 @@ import logger from "../../utils/logger.js";
 
 export function handleAgentMessage(agentId, message) {
     try {
-        logger("messageHandler.js -> handleAgentMessage -> message:", message);
+        // logger("messageHandler.js -> handleAgentMessage -> message:", message);
         // const data = JSON.parse(message);
         // logger("messageHandler.js -> handleAgentMessage -> data:", data)
         if (message.type === "metrics") {

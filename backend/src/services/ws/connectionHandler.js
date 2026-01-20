@@ -19,7 +19,7 @@ export function handleConnection(ws, req) {
     try {
         ws.on('message', async (data) => {
             const msg = JSON.parse(data);
-            console.log("connectionHandler.js -> received message:", msg);
+            // console.log("connectionHandler.js -> received message:", msg);
             logger("connectionHandler.js -> received message: type, role:", msg.type, msg.role)
 
             if (msg.type === 'auth' && !ws.isAuthenticated) {
@@ -57,7 +57,7 @@ export function handleConnection(ws, req) {
             // handle agent messages
             logger("connectionHandler.js -> handling agent message -> ws.isAuthenticated:", ws.isAuthenticated );
             if ( role === 'agent' && msg.type === 'metrics' && ws.isAuthenticated ) {
-                logger("connectionHandler.js -> handling agent message = ", msg);
+                // logger("connectionHandler.js -> handling agent message = ", msg);
                 handleAgentMessage(id, msg);
             }
 

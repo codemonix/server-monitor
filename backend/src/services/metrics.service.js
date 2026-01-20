@@ -22,8 +22,8 @@ function computePercent(used, total) {
 export async function insertMetricPoints( payload ) {
     const points = Array.isArray(payload) ? payload : [payload];
 
-    console.log("metrics.service.js -> insertMetricPoints -> received payload:", payload);
-    console.log("metrics.service.js -> insertMetricPoints -> inserting points:", points);
+    // console.log("metrics.service.js -> insertMetricPoints -> received payload:", payload);
+    console.log("metrics.service.js -> insertMetricPoints -> inserting points:", points.length);
 
     
 
@@ -135,7 +135,7 @@ export async function getServersWithInitStat() {
     }
     ]);
 
-    console.log("metrics.service.js -> getServersWithInitStat -> fetched agents:", agents);
+    console.log("metrics.service.js -> getServersWithInitStat -> fetched agents:", agents.length);
 
     return agents;
 }
@@ -205,159 +205,89 @@ export async function getFilteredMetrics({ page = 0, pageSize = 50, filters = {}
 
     const match = buildMatchFromFilters(filters);
 
-    try {
-        if ( filters.search.trim() ) {
-            const safeSearch = escapeStringRegexp( filters.search.trim() );
-            const regex = new RegExp(safeSearch, 'i');
 
-            // find agents matching the search term
-            const matchingAgents = await Agent.find( {name: regex} ).select('_id').lean();
-            const matchingAgentIds = matchingAgents.map(a => a._id);
+    if ( typeof filters.search === 'string' && filters.search.trim() ) {
+        const safeSearch = escapeStringRegexp( filters.search.trim() );
+        const regex = new RegExp(safeSearch, 'i');
 
-            if (matchingAgentIds.length === 0) {
-                return { items: [], total: 0 };
-            }
+        // find agents matching the search term
+        const matchingAgents = await Agent.find( {name: regex} ).select('_id').lean();
+        const matchingAgentIds = matchingAgents.map(a => a._id);
 
-            match.agent = { $in: matchingAgentIds };
-            // const searchConditions = [ {} ];
-            // if ( matchingAgentIds.length > 0 ) {
-            //     searchConditions.push({ agent: { $in: matchingAgentIds }});
-            // }
-
-            // //Add existing filters
-            // match.$and = match.$and || [];
-            // match.$and.push({ $or: searchConditions });
+        if (matchingAgentIds.length === 0) {
+            return { items: [], total: 0 };
         }
 
-        const pipeline = [
-            { $match: match },
-            { $sort: { [sort.field]: sort.order === 'asc' ? 1 : -1 } },
-            { $skip: page * pageSize },
-            { $limit: pageSize },
+        match.agent = match.agent
+            ? { $in: matchingAgentIds.filter(id => match.agent.$in.includes(id)) }
+            : { $in: matchingAgentIds };
+    }
 
-            // limited lookup to get agent name
-            {
-                $lookup: {
-                    from: "agents",
-                    localField: "agent",
-                    foreignField: "_id",
-                    as: "agentInfo"
-                }
-            },
-            { $unwind: { path: "$agentInfo", preserveNullAndEmptyArrays: true } },
+    const pipeline = [
+        { $match: match },
+        { $sort: { [sort.field]: sort.order === 'asc' ? 1 : -1 } },
+        { $skip: page * pageSize },
+        { $limit: pageSize },
 
-            {
-                $project: {
-                    agent: 1,
-                    agentName: "$agentInfo.name",
-                    ts: 1,
-                    cpu: 1,
-                    memUsed: 1,
-                    memTotal: 1,
-                    memPercent: 1,
-                    rx: 1,
-                    tx: 1,
-                    diskUsed: 1,
-                    diskTotal: 1,
-                    diskPercent: 1,
-                    load1: 1,
-                    load5: 1,
-                    load15: 1,
-                    upTime: 1,
-                    createdAt: 1,
-                }
+        // limited lookup to get agent name
+        {
+            $lookup: {
+                from: "agents",
+                localField: "agent",
+                foreignField: "_id",
+                as: "agentInfo"
             }
-        ];
+        },
+        { $unwind: { path: "$agentInfo", preserveNullAndEmptyArrays: true } },
 
-        const items = await MetricPoint.aggregate(pipeline).exec();
+        {
+            $project: {
+                agent: 1,
+                agentName: "$agentInfo.name",
+                ts: 1,
+                cpu: 1,
+                memUsed: 1,
+                memTotal: 1,
+                memPercent: 1,
+                rx: 1,
+                tx: 1,
+                diskUsed: 1,
+                diskTotal: 1,
+                diskPercent: 1,
+                load1: 1,
+                load5: 1,
+                load15: 1,
+                upTime: 1,
+                createdAt: 1,
+            }
+        }
+    ];
 
-        console.log("metrics.service.js -> filteredMetrics -> fetched items:", items.length);
-        console.log("metrics.service.js -> filteredMetrics -> match object:", match);
-        console.log("metrics.service.js -> filteredMetrics -> last item ts:", items.length > 0 ? items[0].ts : null);
+    const items = await MetricPoint.aggregate(pipeline).exec();
 
-        // get total count
-        const total = await MetricPoint.countDocuments(match);
+    console.log("metrics.service.js -> filteredMetrics -> fetched items:", items.length);
+    console.log("metrics.service.js -> filteredMetrics -> match object:", match);
+    console.log("metrics.service.js -> filteredMetrics -> last item ts:", items.length > 0 ? items[0].ts : null);
+
+    // get total count
+    const total = await MetricPoint.countDocuments(match);
         
-    
-    // const query = {};
-    // console.log("metrics.service.js -> filteredMetrics -> page:", page, "pageSize:", pageSize);
 
-    // if (Array.isArray(agentIds) && agentIds.length > 0 ) {
-    //     query.agent = { $in: agentIds };
-    // }
+    return { items, total }
 
-    // for ( const field in ranges ) {
-    //     const { min, max } = ranges[field];
-    //     const range = {};
+}
 
-    //     if (min !== null && min !== undefined) range.$gte = min;
-    //     if (max !== null && max !== undefined) range.$lte = max;
-
-    //     if (Object.keys(range).length > 0) {
-    //         query[field] = range;
-    //     }
-    // }
-
-    // if (search && search.trim() !== "") {
-    //     const search = search.trim();
-    //     query.$or = [
-
-    //     ]
-    // }
-
-    // try {
-    //     console.log("metrics.service.js -> filteredMetrics -> query:", query);
-    
-    
-    //     const items = await MetricPoint.find(query)
-    //         .sort({ createdAt: -1 })
-    //         .skip(page * pageSize)
-    //         .limit(pageSize)
-    //         .lean();
-    
-    //     const total = await MetricPoint.countDocuments(query);
-    //     console.log("metrics.service.js -> filteredMetrics -> total:", total);
-    //     // console.log("metrics.controller.js -> filteredMetrics -> items:", items);
-    
-    
-        return { items, total }
-
+export async function deleteMetricsByAgentId(agentId) {
+    try {
+        const result = await MetricPoint.deleteMany({ agent: agentId });
+        return result;
     } catch (error) {
-        console.error("metrics.service.js -> getFilteredMetrics -> error:", error.message);
+        console.error("metrics.service.js -> deleteMetricsByAgentId -> error:", error.message);
         throw error;
     }
 }
 
-    // const query = {};
 
-
-
-
-    // if (search && search.trim() !== "") {
-    //     const regex = new RegExp(search, "i");
-    //     query.$or = [
-    //         { os: regex },
-    //         { cpuModel: regex },
-    //         { memTotal: regex },
-    //         { load1: regex },
-    //         { load5: regex },
-    //         { load15: regex },
-    //     ]
-    // }
-
-    // const skip = (parseInt(page -1)) * parseInt(pageSize);
-    // const limit = parseInt(pageSize);
-
-    // const [ total, metrics ] = await Promise.all([
-    //     MetricPoint.countDocuments(query),
-    //     MetricPoint.find(query)
-    //         .sort({ createdAt: -1 })
-    //         .skip(skip)
-    //         .limit(limit)
-    //         .lean()
-    // ]);
-
-    // return [ total, metrics]
 
 
 

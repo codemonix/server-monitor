@@ -26,7 +26,7 @@ export function broadcastToDashboards(data) {
     const transformedData = transformMetricData(data);
 
 
-    console.log("broadcastManager.js -> broadcastToDashboards -> data:", transformedData);
+    // console.log("broadcastManager.js -> broadcastToDashboards -> data:", transformedData);
     const dashboards = getDashboards();
     console.log("broadcastManager.js -> broadcasting to dashboards count:", dashboards.size);
     const json = JSON.stringify(transformedData);

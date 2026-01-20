@@ -63,7 +63,7 @@ export const cfg = {
     // Other settings
     pollIntervalMs: Number( fileCfg.pollIntervalMs || '5000'),
     batchMaxItems: Number(fileCfg.batchMaxItems || '10'),
-    collectInterval: 1000,
+    collectInterval: 3000,
     wsUrl: process.env.WS_URL || fileCfg.wsUrl || 'http://localhost:4000/ws/metrics',
     wsReconnectBaseMs: Number(process.env.WS_RECONNECT_BASE_MS || '2000'),
     batchMaxAgeMs: parseInt(process.env.BATCH_MAX_AGE_MS || '3000', 10),
@@ -72,3 +72,4 @@ export const cfg = {
     diskQueueMaxFiles: process.env.DISK_QUEUE_MAX_FILES || fileCfg.diskQueueMaxFiles ||100,
     tags: fileCfg.tags || []
 };
+

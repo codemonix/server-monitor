@@ -9,8 +9,12 @@ import authRoutes from './routes/auth.route.js';
 import agentRoutes from './routes/agent.route.js';
 import serverRoutes from './routes/servers.route.js';
 import metricRoutes from './routes/metrics.route.js';
+import settingsRoutes from './routes/settings.route.js';
+import userRoutes from './routes/user.route.js';
 
-// import { initWsHub } from './services/wsHub.services.js';
+import { startCleanupJob } from './services/cleanup.service.js';
+
+startCleanupJob();
 
 const app = express();
 app.use(helmet());
@@ -23,6 +27,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/agents', agentRoutes);
 app.use('/api/servers', serverRoutes);
 app.use('/api/metrics', metricRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
