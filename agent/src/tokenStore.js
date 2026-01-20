@@ -26,7 +26,11 @@ export async function saveTokenFile(tokenObj) {
 }
 
 export async function loadTokenFile() {
-    if (cache) return cache;
+    if (cache) {
+        console.log("Token data loaded from cache");
+        return cache;
+    }
+    
     try {
         console.info('tokenStore,js -> loadTokenFile stateFilePath:', stateFilePath);
         const raw = await fs.readFile(stateFilePath, 'utf8');
