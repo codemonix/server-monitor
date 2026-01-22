@@ -26,7 +26,7 @@ export default function ServerCard({ server, selected, onClick }) {
             sx={{
                 cursor: 'pointer',
                 borderColor: selected ? 'primary.main' : undefined, 
-                bgcolor: 'grey.200'
+                bgcolor: 'grey.300'
             }}
         >
             <CardContent>

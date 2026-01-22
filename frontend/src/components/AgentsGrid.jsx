@@ -1,4 +1,5 @@
 import { DataGrid } from "@mui/x-data-grid";
+import { Paper } from "@mui/material";
 import dayjs from "dayjs";
 import { useMemo  } from "react";
 import { statusColors } from "../utils/getAgentStatus.js";
@@ -55,7 +56,7 @@ export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSe
     ], []);
 
     return (
-        <div style={{ height: 700, width: '100%' }} >
+        <Paper sx={{ height: 'calc(100vh - 200px)', width: '100%', backgroundColor: 'yellow' }} >
             <DataGrid 
                 rows={agents}
                 columns={columns}
@@ -63,9 +64,11 @@ export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSe
                 loading={loading}
                 getRowId={(row) => row._id}
                 checkboxSelection
-                selectionModel={rowSelectionModel}
+                rowSelectionModel={rowSelectionModel}
                 onRowSelectionModelChange={onRowSelectionModelChange}
-
+                initialState={{
+                    pagination: { paginationModel: { pageSize: 10 }}
+                }}
 
                 paginationModel={gridState.paginationModel}
                 onPaginationModelChange={gridState.setPaginationModel}
@@ -88,7 +91,7 @@ export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSe
 
 
             sx={{
-                
+                height: '100%',
                 '& .MuiDataGrid-columnHeader': {
                     display: 'flex',
                     alignItems: 'center',
@@ -114,6 +117,6 @@ export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSe
                 }
             }}
             />
-        </div>
+        </Paper>
     )
 }

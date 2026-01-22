@@ -23,12 +23,12 @@ export default function FilterPanel({ open, onClose, currentFilters, onApply }) 
     }, [agents, draft.agentIds]);
 
 
-    const toggleAgent = (id) => {
-        setDraft( prev => {
-            const next = prev.agentIds.includes(id) ? prev.agentIds.filter( a => a !== id ) : [...prev.agentIds, id ];
-            return { ...prev, agentIds: next };
-        });
-    }
+    // const toggleAgent = (id) => {
+    //     setDraft( prev => {
+    //         const next = prev.agentIds.includes(id) ? prev.agentIds.filter( a => a !== id ) : [...prev.agentIds, id ];
+    //         return { ...prev, agentIds: next };
+    //     });
+    // }
 
     const setRanges = (field, v) => {
         setDraft( prev => ({ ...prev,
@@ -38,11 +38,11 @@ export default function FilterPanel({ open, onClose, currentFilters, onApply }) 
     return (
 
         <Drawer anchor="right" open={open} onClose={onClose} >
-            <Box sx={{ width: 360, p: 2 }} >
+            <Box sx={{ width: 360, p: 2, mt: 2 }} >
                 <Typography variant="h6" >Filters</Typography>
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" >Agents</Typography>
-                <Box sx={{ maxHeight: 180, overflow: "auto", mb: 2 }} >
+                {/* <Typography variant="subtitle2" >Agents</Typography> */}
+                {/* <Box sx={{ maxHeight: 180, overflow: "auto", mb: 2 }} >
                     {agents.map((agent) => (
                         <FormControlLabel 
                             key={agent._id}
@@ -52,7 +52,7 @@ export default function FilterPanel({ open, onClose, currentFilters, onApply }) 
                             label={agent.name}
                         />
                     ))}
-                </Box>
+                </Box> */}
 
                 <RangeSliderControl 
                     label="CPU %"

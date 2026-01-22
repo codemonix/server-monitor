@@ -45,19 +45,19 @@ export default function TopBar({ onMenuClick }) {
             </Typography>
           </Box>
 
-          {/* Right side: indicators & Buttons */}
-          <Box display="flex" alignItems="center" gap={3} >
+          {/* Right side: indicators & Button */}
+          <Box display="flex" flexDirection="row" alignItems="center" gap={3} >
             {/* Status indicators */}
-            <Box display="flex" gap={2} sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 2, py: 0.5, borderRadius: 4 }} >
+            <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap={2} sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 2, py: 1, borderRadius: 2 }} >
               <Box display="flex" alignItems="center" gap={0.5} title="Online">
                 <CircularIcon sx={{ fontSize: 12, color: '#4caf50' }} />
                 <Typography variant="body2" fontWeight="bold" >{counts.online}</Typography>
               </Box>
-              <Box diaplay="flex" alignItems="center" gap={0.5} title="Warning" >
+              <Box display="flex" alignItems="center" gap={0.5} title="Warning" >
                 <CircularIcon sx={{ fontSize: 12, color: '#ff9800' }} />
                 <Typography variant="body2" fontWeight="bold" >{counts.warning}</Typography>
               </Box>
-              <Box diaplay="flex" alignItems="center" gap={0.5} title="Offline" >
+              <Box display="flex" alignItems="center" gap={0.5} title="Offline" >
                 <CircularIcon sx={{ fontSize: 12, color: '#f44336' }} />
                 <Typography variant="body2" fontWeight="bold" >{counts.offline}</Typography>
               </Box>

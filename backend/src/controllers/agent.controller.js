@@ -1,8 +1,7 @@
 
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
 import Agent from '../models/Agent.model.js';
-import { getAgentsList, delAgent } from '../services/agent.service.js';
+import { getAgentsList, delAgent, refreshSession } from '../services/agent.service.js';
 import { agentJwtService } from '../services/jwt.service.js';
 import { verifyEnrollmentToken, generateEnrollToken, getEnrollmentTokensList } from '../services/enrollment.service.js';
 import logger from '../utils/logger.js';
@@ -67,15 +66,21 @@ export async function enrollAgent(req, res) {
 export async function refreshAgentToken(req, res) {
     try {
         const  authHeader  = req.headers['authorization'];
-        const refreshToken = authHeader.split(' ')[1];
+        const refreshToken = authHeader ? authHeader.split(' ')[1] : null;
         logger("agent.controller.js -> refreshAgentToken -> refreshToken:", refreshToken)
         if (!refreshToken) {
             logger("agent.controller.js -> Refresh token required");
             return res.status(400).json({ error: 'refresh token required' });
         }
-        const newTokens = await agentJwtService.refreshTokens(refreshToken);
-        logger("agent.controller.js -> Refreshed agent newTokens :", newTokens);
-        res.json(newTokens);
+        // const newTokens = await agentJwtService.refreshTokens(refreshToken);
+        const result = await refreshSession(refreshToken);
+        
+        if (!result) {
+            return res.status(403).json({ error: 'invalid refresh token' });
+        }
+        
+        logger("agent.controller.js -> Refreshed agent newTokens and config:", result);
+        res.json(result);
     } catch (error) {
         logger("agent.controller.js -> Error refreshing agent token:", error.message);
         return res.status(500).json({ error: "token refresh failed" });

@@ -14,7 +14,7 @@ export default function AgentsPage() {
     const dispatch = useDispatch();
     const { items: allAgents =[], hiddenAgentIds = [] } = useSelector((state) => state.metrics);
     const agents = allAgents.filter(agent => !hiddenAgentIds.includes(agent._id));
-    
+
     const loading = useSelector((state) => state.metrics.state === "loading");
 
     const [ selectedAgents, setSelectedAgents ] = useState({ ids: new Set() });
@@ -120,7 +120,7 @@ export default function AgentsPage() {
                     <Tab label="Agents" />
                     <Tab label="Enrollment Tokens" />
                 </Tabs>
-                <Box sx={{ mt: 1, display: tab === 0 ? 'block' : 'none' }}  >
+                { tab === 0 && (<Box sx={{ mt: 1, height: 'calc(100vh - 200px)'  }}  >
                     
                         <AgentsGrid 
                             agents={agents}
@@ -131,13 +131,13 @@ export default function AgentsPage() {
                         }}
                     />
                     
-                </Box>
-                <Box sx={{ mt: 1, display: tab === 1 ? 'block' :'none' }}  >
+                </Box>)}
+                { tab === 1 && (<Box sx={{ mt: 1 }}  >
                         <EnrollmentTokensGrid 
                             tokens={enrollmentTokens}
                             loading={loading}
                         />
-                </Box>
+                </Box>)}
             </Box>
             <AddAgentDialog 
                 isDialogOpen={isTokenDialogOpen}

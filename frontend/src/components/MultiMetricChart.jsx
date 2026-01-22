@@ -1,11 +1,13 @@
-import { Paper, Typography, Box} from "@mui/material";
+import { Paper, Typography  } from "@mui/material";
 import ReactEcharts from 'echarts-for-react';
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 
 export default function MultiMetricChart({ title, selected, chartData }) {
 
     console.log("MultiMetricChart.jsc -> chartData:", chartData)
     console.log("MultiMetricChart.jsx -> title:", title);
+
+    const zoomRef = useRef({ start: 0, end: 100 });
 
     
     const series = useMemo(() => {
@@ -13,33 +15,42 @@ export default function MultiMetricChart({ title, selected, chartData }) {
         console.log("MultiMetricChart.jsx -> selected:", selected);
         console.log("MultiMetricChart.jsx -> chartData:", chartData);
 
-        if (!chartData || !chartData.cpu || chartData.cpu.length === 0) {
-            return [];
-        }
+        if (!chartData) return [];
 
-    const map = {
-        cpu:     { label: "CPU %",       color: "#e53935", yAxisIndex: 0 },
-        memory:  { label: "Memory %",    color: "#1e88e5", yAxisIndex: 0 },
-        disk:    { label: "Disk %",      color: "#43a047", yAxisIndex: 0 },
-        network: { label: "Network Kbps",color: "#fb8c00", yAxisIndex: 1 }, 
-    };
+
+        const map = {
+            cpu:     { label: "CPU %",       color: "#e53935", yAxisIndex: 0 },
+            memory:  { label: "Memory %",    color: "#1e88e5", yAxisIndex: 0 },
+            disk:    { label: "Disk %",      color: "#43a047", yAxisIndex: 0 },
+            network: { label: "Network Kbps",color: "#fb8c00", yAxisIndex: 1 }, 
+        };
 
         const formatSeriesData = (data) => 
-            data.map( item => [ item.x.getTime(), item.y]);
+            data ? data.map( item => [ item.x.getTime(), item.y]) : [] ;
 
-        return Object.keys(selected)
-            .filter((key) => selected[key])
-            .map((key) => ({
-                name: map[key].label,
-                type: 'line',
-                symbol: 'none',
-                smooth: true,
-                sampling: 'average',
-                itemStyle: { color: map[key].color },
-                yAxisIndex: map[key].yAxisIndex,
-                data: formatSeriesData(chartData[key]),
-                emphasis: { focus: "series" },
-            }));
+        return Object.keys(map)
+            .map((key) => {
+                const isSelected = selected[key];
+                const config = map[key];
+
+                return {
+                    name: config.label,
+                    type: 'line',
+                    // symbol: 'none',
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    showSymbol: false,
+                    smooth: true,
+                    sampling: 'average',
+                    itemStyle: { color: config.color },
+                    yAxisIndex: config.yAxisIndex,
+                    data: isSelected ?  formatSeriesData(chartData[key]) : [],
+                    emphasise: {
+                        focus: 'series',
+                        lineStyle: { width: 3 }
+                    }
+                }
+            });
     },[selected, chartData]);
 
     const options = useMemo(() => {
@@ -57,8 +68,8 @@ export default function MultiMetricChart({ title, selected, chartData }) {
             dataZoom: [
                 {
                     type: 'slider',
-                    start: 0,
-                    end: 100,
+                    start: zoomRef.current.start,
+                    end: zoomRef.current.end
                 },
                 {
                     type: 'inside',
@@ -71,9 +82,10 @@ export default function MultiMetricChart({ title, selected, chartData }) {
                     let text = date.toLocaleString();
 
                     params.forEach((item) => {
-                        text += `<br/>${item.marker} ${item.seriesName}: ${item.value[1]}`;
+                        if (item.value[1] !== undefined) {
+                            text += `<br/>${item.marker} ${item.seriesName}: ${item.value[1]}`;
+                        }
                     });
-
                     return text;
                 },
             },
@@ -92,26 +104,30 @@ export default function MultiMetricChart({ title, selected, chartData }) {
 
             xAxis: {
                 type: 'time',
+                boundryGap: false,
                 axisLabel: {
+                    hideOverlap: true,
                     formatter: (value) => {
                         const date = new Date(value);
-                        return (
-                            date
-                                .toLocaleString("en-US", {
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                })
-                                .replace(/\//g, '-') + 
-                                "\n" + 
-                                date.toLocaleTimeString("en-US", {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                })
-                        );
+
+                        const dateStr = date.toLocaleDateString("en-US", {
+                            month: 'numeric',
+                            day: 'numeric'
+                        });
+
+                        const timeStr = date.toLocaleTimeString("en-US", {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        })
+
+
+                        return `${dateStr}\n${timeStr}`;
                     },
+                    lineHeight: 15,
+                    fontSize: 11
                 },
             },
-
             yAxis: [
                 {
                     type: "value",
@@ -123,22 +139,31 @@ export default function MultiMetricChart({ title, selected, chartData }) {
                 {
                     type: "value",
                     min: 0,
-                    max: 5400,
+                    // max: 5400,
                     position: 'right',
 
                 }
             ],
-
-
             series
         };
     },[series]);
 
+    const onEvents = {
+        'dataZoom': (params) => {
+            const { start, end } = params.batch ? params.batch[0] : params ;
+            if (start !== undefined && end !== undefined) {
+                zoomRef.current = { start, end };
+            }
+        }
+    }
 
-    if (series.length === 0) {
+    const hasData = chartData && Object.values(chartData).some(arr => arr && arr.length > 0);
+    console.log("MultiMetricChart.jsx -> hasData:", hasData);
+    if (!hasData) {
         return (
+            // { title: { text: "No Metrics Selected", left: 'center' } }
             <Typography sx={{ p: 2, textAlign: 'center'}} variant="body2" >
-                No Data Available
+                No Data Available. 
             </Typography>
         )
     }
@@ -153,6 +178,7 @@ export default function MultiMetricChart({ title, selected, chartData }) {
             <ReactEcharts 
                 option={options}
                 notMerge={false}
+                onEvents={onEvents}
                 lazyUpdate={false}
                 style={{ width: '100%', height: '300px' }}
             />

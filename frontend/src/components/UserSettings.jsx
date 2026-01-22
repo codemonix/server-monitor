@@ -97,7 +97,7 @@ export default function UserSettings () {
                         <IconButton onClick={() => { setEditData({ id: p.row._id, email: p.row.email, role: p.row.role });
                             setEditOpen(true);
                         }} color="primary" disabled={isSelf} size="small" ><EditIcon /></IconButton>
-                        <IconButton />
+                        {/* <IconButton /> */}
                         <IconButton onClick={() => handleDelete(p.row._id)} color="error" disabled={isSelf} size="small" ><DeleteIcon /></IconButton>
                     </Box>
                 );
