@@ -7,6 +7,9 @@ let ws = null;
 let reconnectAttempts = 0;
 let manualClose = false;
 
+const MAX_RETRIES = 10;
+
+
 function backoffMs() {
     const base = cfg.wsReconnectBaseMs || 2000;
     const max = 60_000;
@@ -53,9 +56,6 @@ export async function connectWs() {
 
     ws.on('error', (error) => {
         console.error("wsClient.js -> WebSocket error:", error.message);
-        if ( ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING ) {
-            if (!manualClose) scheduleReconnect();
-        }
     });
 
     return ws;
@@ -66,6 +66,12 @@ function scheduleReconnect() {
         console.info(" Reconnect aborted, already connected")
         return;
     }
+
+    if ( reconnectAttempts >= MAX_RETRIES ) {
+        console.error(`wsClient.js -> Max reconnect attempts reached (${MAX_RETRIES}), aborting reconnect`);
+        return;
+    }
+
     reconnectAttempts++;
     const ms = backoffMs();
     console.info(` wsClient.js -> scheduling WebSocket reconnect in ${ms} ms (attempt ${reconnectAttempts})`);
@@ -82,7 +88,6 @@ function scheduleReconnect() {
 export function isConnected() {
     console.info(" wsClient.js -> isConnected check", (ws && ws.readyState === WebSocket.OPEN));
     return ws && ws.readyState === WebSocket.OPEN;
-    // return false;
 }
 
 export function sendPayload(payload) {

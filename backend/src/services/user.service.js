@@ -76,3 +76,17 @@ export async function changeUserPassword(userId, currentPassword, newPassword) {
     logger(`user.service.js -> User password updated for: ${user.email}`);
     return true;
 }
+
+export async function resetUserPassword(userId, newPassword, requestorId) {
+    const user = await User.findById(userId);
+    if (!user) throw new Error('User not found');
+
+    if (user.email === SUPPER_ADMIN_EMAIL) {
+        throw new Error("You cannot reset the super admin's password.");
+    }
+
+    await user.setPassword(newPassword);
+    await user.save();
+    logger(`user.service.js -> User password reset for: ${user.email} by ${requestorId}`);
+    return true;
+}

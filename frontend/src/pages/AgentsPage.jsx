@@ -17,7 +17,9 @@ export default function AgentsPage() {
 
     const loading = useSelector((state) => state.metrics.state === "loading");
 
-    const [ selectedAgents, setSelectedAgents ] = useState({ ids: new Set() });
+    const [ selectedAgents, setSelectedAgents ] = useState({ type: 'include', ids: new Set() });
+    // const [ trySetForAgents, setTrySetForAgents ] = useState( new Set())
+
     const [ tab, setTab ] = useState(0);
     const [ enrollmentTokens, setEnrollmentTokens ] = useState([]);
 
@@ -93,27 +95,29 @@ export default function AgentsPage() {
 
     const handleDeleteSelected = async () => {
         console.log("AgentsPage.jsx -> handleDeleteSelected -> selectedAgents:", selectedAgents);
-        if (!selectedAgents || selectedAgents.ids.size === 0) return;
+        if (!selectedAgents || selectedAgents.length === 0) return;
         if (!window.confirm(`Delete ${selectedAgents.ids.size} selected agent(s) and related metrics?`)) return;
 
         try {
             //delete in parallel and reload
-            await Promise.all(Array.from(selectedAgents.ids).map((id) => api.delete(`/agents/${id}`)));
-            setSelectedAgents({ ids: new Set() });
+            await Promise.all([...selectedAgents.ids].map((id) => api.delete(`/agents/${id}`)));
+            setSelectedAgents({ type: 'include', ids: new Set() });
             dispatch(fetchServerStats());
         } catch (error) {
             logger.error("AgentsPage.jsx -> handleDeleteSelected -> error deleting agents:", error.message);
         }
     };
 
+    console.log("AgentsPage.jsx -> selectedAgents:", selectedAgents)
+
     return (
         <Box>
             <AgentsActionBar 
                 onRefresh={handleRefresh}
                 onAdd={handleAdd}
-                selected={selectedAgents}
+                selected={[...selectedAgents.ids]}
                 onDeleteSelected={handleDeleteSelected}
-                disabledDelete={selectedAgents.ids?.size === 0}
+                disabledDelete={selectedAgents.ids.size === 0}
             />
             <Box sx={{ width: '100%', p: 2 }} >
                 <Tabs value={tab} onChange={handleTabChange} >
@@ -127,6 +131,13 @@ export default function AgentsPage() {
                             loading={loading}
                             rowSelectionModel={selectedAgents}
                             onRowSelectionModelChange={(newSelection) => {
+                                console.log("AgentsPage.jsx -> onRowSelectionModelChange -> newSelection:", newSelection);
+                                // if (Array.isArray(newSelection) && newSelection.ids) {
+                                //     const idsArray = Array.from(newSelection.ids);
+                                //     setSelectedAgents(idsArray);
+                                // } else {
+                                //     setSelectedAgents(newSelection);
+                                // }
                                 setSelectedAgents(newSelection);
                         }}
                     />

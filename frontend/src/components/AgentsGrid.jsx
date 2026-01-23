@@ -64,10 +64,13 @@ export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSe
                 loading={loading}
                 getRowId={(row) => row._id}
                 checkboxSelection
+                
+                // rowSelection={rowSelectionModel}
                 rowSelectionModel={rowSelectionModel}
                 onRowSelectionModelChange={onRowSelectionModelChange}
                 initialState={{
-                    pagination: { paginationModel: { pageSize: 10 }}
+                    pagination: { paginationModel: { pageSize: 10 }},
+                    columns: { orderedFields: gridState.orderedFields}
                 }}
 
                 paginationModel={gridState.paginationModel}
@@ -79,8 +82,8 @@ export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSe
                 columnVisibilityModel={gridState.columnVisibilityModel}
                 onColumnVisibilityModelChange={gridState.setColumnVisibilityModel}
 
-                columnOrder={gridState.columnOrder}
-                onColumnOrderChange={gridState.setColumnOrder}
+                // columnOrder={gridState.columnOrder}
+                onColumnOrderChange={(p) => gridState.setOrferedFields(p.columnField)}
 
                 pageSizeOptions={[10, 25, 50]}
 

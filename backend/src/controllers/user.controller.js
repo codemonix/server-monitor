@@ -48,3 +48,20 @@ export async function updateUserRole(req,res) {
     }
     
 }
+
+export async function resetPassword(req, res) {
+    try {
+        const { password } = req.body;
+        if ( !password || password.length < 6 ) {
+            return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+        
+        }
+
+        await userServices.resetUserPassword(req.params.id, password, req.user.sub);
+        res.json({ message: 'Password reset successfully' });
+    } catch (error) {
+        logger("user.service.js -> resetPassword -> error:", error.message);
+        const status = error.message.includes("cannot") ? 403 : 500;
+        res.status(status).json({ error: error.message });  
+    }
+}
