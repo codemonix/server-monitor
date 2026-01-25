@@ -17,7 +17,7 @@ jobs:
         
         strategy:
             matrix:
-              services: [backend, frontend]
+              service: [backend, frontend]
 
         steps:
             - name: Checkout repository
