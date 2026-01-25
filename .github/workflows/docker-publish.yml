@@ -13,13 +13,17 @@ jobs:
 
     strategy:
       matrix:
-        service: [backend, frontend]
+        include:
+            - folder: backend
+              image_name: srm-backend
+            - folder: frontend
+              image_name: srm-frontend
+
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # FIX IS HERE: Explicitly set registry to ghcr.io
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -34,7 +38,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/${{ matrix.service }}
+          images: ghcr.io/${{ github.repository }}/${{ matrix.image_name }}
           tags: |
             type=raw,value=latest
             type=sha,format=long
@@ -42,7 +46,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./${{ matrix.service }}
+          context: ./${{ matrix.folder }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
