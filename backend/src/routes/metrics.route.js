@@ -6,7 +6,7 @@ import authUser from "../middlewares/authUser.middleware.js";
 const router = Router();
 
 router.post("/points", authAgentJwt, ingestMetrics);
-router.post("/", filteredMetrics );
+router.post("/", authUser(), filteredMetrics );
 
 
 export default router;

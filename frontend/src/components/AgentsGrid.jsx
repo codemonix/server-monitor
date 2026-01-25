@@ -14,11 +14,11 @@ export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSe
 
         { field: 'name', headerName: 'Name', width: 200, headerAlign: 'center', align: 'center' },
         { field: 'host', headerName: 'Host', width: 200, headerAlign: 'center', align: 'center' },
-        { field: 'ip', headerName: 'IP Adress', width: 150, headerAlign: 'center', align: 'center' },
+        { field: 'ip', headerName: 'IP Adress', width: 120, headerAlign: 'center', align: 'center' },
         { 
             field: 'status', 
             headerName: 'Status', 
-            width: 120, 
+            width: 80, 
             headerAlign: 'center', 
             align: 'center',
             renderCell: (params) => {

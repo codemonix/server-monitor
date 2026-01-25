@@ -33,26 +33,28 @@ export async function generateEnrollToken(createdBy, ttlMin = 60) {
 
 export async function verifyEnrollmentToken(token, consume = true) {
     try {
-        const enrollment = await EnrollmentToken.findOne({ token });
-        if (!enrollment) {
-            logger("enrollment.service.js -> Enrollment token not found");
-            return null;
-        }
-        if (enrollment.used) {
-            logger("enrollment.service.js -> Enrollment token already used");
-            return null;
-        }
 
-        if (enrollment.expiresAt < new Date()) {
-            logger("enrollment.service.js -> Enrollment token expired");
-            return null;
-        }
+        const query = {
+            token,
+            used: false,
+            expiresAt: { $gt: new Date() },
+        };
+
         if (consume) {
-            enrollment.used = true;
-            await enrollment.save();
+            const enrollment = await EnrollmentToken.findOneAndUpdate(
+                query,
+                { $set: { used: true } },
+                { new: true }
+            );
+            if (!enrollment) {
+                logger("enrollment.service.js -> verifyEnrollmentToken -> Enrollment token not found or already used");
+                return null;
+            }
+            return enrollment;
+        } else {
+            // pick without consuming
+            return await EnrollmentToken.findOne(query);
         }
-
-        return enrollment;
     } catch (error) {
         logger("enrollment.service.js -> Error verifying enrollment token:", error.message);
         return null;

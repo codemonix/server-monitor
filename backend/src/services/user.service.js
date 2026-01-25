@@ -1,5 +1,7 @@
 import User from "../models/User.model.js";
+import RefreshToken from "../models/RefreshToken.model.js";
 import logger from "../utils/logger.js";
+
 
 const SUPPER_ADMIN_EMAIL = process.env.SUPPER_ADMIN_EMAIL || 'admin@srm.com';
 
@@ -37,6 +39,8 @@ export async function deleteUserById(userId, requestorId) {
         throw new Error("You cannot delete the super admin account.");
     }
 
+    await RefreshToken.deleteMany({ user: userId });
+
     await User.findByIdAndDelete(userId);
     logger(`user.service.js -> User deleted: ${userToDelete.email} by ${requestorId}`);
     return true;
@@ -73,6 +77,10 @@ export async function changeUserPassword(userId, currentPassword, newPassword) {
 
     await user.setPassword(newPassword);
     await user.save();
+
+    // remove all current sessions
+    await RefreshToken.deleteMany({ user: userId });
+
     logger(`user.service.js -> User password updated for: ${user.email}`);
     return true;
 }

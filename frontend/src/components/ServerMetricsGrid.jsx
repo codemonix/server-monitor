@@ -8,7 +8,7 @@ const columns = [
     { field: "memPercent", headerName: "Mem %", width: 110, type: "number" },
     { field: "diskPercent", headerName: "Disk %", width: 110, type: "number" },
     { field: "rx", headerName: "RX", width: 110 },
-    { field: "createdAt", headerName: "At", width: 180, valueGetter: (p) => {
+    { field: "ts", headerName: "At", width: 180, valueGetter: (p) => {
         return p ? new Date(p).toLocaleString() : '-';
     } },
     { field: "tx", headerName: "TX", width: 110 },

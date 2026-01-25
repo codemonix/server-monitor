@@ -2,9 +2,9 @@ import jwt from "jsonwebtoken";
 import Agent from "../models/Agent.model.js";
 import logger from "../utils/logger.js";
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-const AGENT_SECRET = process.env.JWT_AGENT_SECRET;
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'dev_access_secret_do_not_use';
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret_do_not_use';
+const AGENT_SECRET = process.env.JWT_AGENT_SECRET || 'dev_agent_secret_do_not_use';
 
 const ACCESS_TTL = process.env.ACCESS_TTL_MIN || '15m';
 const REFRESH_TTL = process.env.REFRESH_TTL_DAYS || '30d';
@@ -80,8 +80,8 @@ export const agentJwtService = {
                 return null;
             }
             return decoded;
-        } catch {
-            logger("jwt.service.js -> token verification failed");
+        } catch (error) {
+            logger("jwt.service.js -> token verification failed", error.message);
             return null;
         }
     }

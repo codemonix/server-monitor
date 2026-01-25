@@ -12,7 +12,7 @@ export function StatusPill({ value, label }) {
                 px: 1.5,
                 py: 0.25,
                 borderRadius: '9999px',
-                bgcolor: 'grey.300',
+                bgcolor: 'grey.200',
                 color: 'black',
                 fontSize: '0.75rem',
                 fontWeight: 500,
