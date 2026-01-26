@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # DB
@@ -6,7 +6,7 @@ services:
     image: mongo:6.0
     container_name: srm-mongodb
     restart: unless-stopped
-    volumns:
+    volumes:
       - mongo-data:/data/db
     networks:
       - srm-network
@@ -23,8 +23,8 @@ services:
         max-file: "3"
 
   # Backend
-  Backend:
-    build: ./backend
+  backend:
+    image: ghcr.io/codemonix/server-monitor/srm-backend:latest
     container_name: srm-backend
     restart: unless-stopped
     depends_on:
@@ -51,7 +51,7 @@ services:
 
   # Frontend
   frontend: 
-    build: ./frontend
+    image: ghcr.io/codemonix/server-monitor/srm-frontend:latest
     container_name: srm-frontend
     restart: unless-stopped
     depends_on:
