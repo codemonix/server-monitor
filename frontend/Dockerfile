@@ -19,7 +19,7 @@ COPY --from=build /app/dist .
 # Copy config
 COPY runtime-config.js.tpl .
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-COPY nginx.conf /etc/nginx/conf.d/default.cong
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 RUN chmod +x /docker-entrypoint.sh
 
