@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAccessToken } from "../context/tokenManager.js";
 
-const API_BASE = (window?.config?.API_BASE || import.meta.env.VITE_API_BASE || "http://localhost:4000");
+const API_BASE = (window?.config?.API_BASE || import.meta.env.VITE_API_BASE);
 
 console.log("api.js -> API_BASE:", API_BASE);
 
