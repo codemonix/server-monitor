@@ -1,5 +1,5 @@
 
 window.config = window.config || {
-    API_BASE: 'http://localhost:5000/api',
-    WS_BASE: 'ws://localhost:5000'
+    API_BASE_URL: 'http://localhost:4000',
+    WS_BASE_URL: 'http://localhost:4000/ws'
 }

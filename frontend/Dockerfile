@@ -8,7 +8,7 @@ COPY . .
 RUN npm run build
 
 # Serv
-FROM nginx:alpine
+FROM nginx:stable-alpine
 RUN apk add --no-cache gettext
 
 WORKDIR /usr/share/nginx/html

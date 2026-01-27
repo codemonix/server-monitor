@@ -1,8 +1,8 @@
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getServerMetrics } from "../services/api.js";
 import { logger } from "../utils/log.js";
 
-const WS_BASE = (window?.config?.WS_BASE) || ( (window?.config?.API_BASE || import.meta.env.VITE_API_BASE || 'http://localhost:4000').replace(/^http/, 'ws') )
+const WS_BASE = (window?.config?.WS_BASE_URL) || ( (window?.config?.API_BASE_URL || import.meta.env.VITE_API_BASE ).replace(/^http/, 'ws') )
 
 
 export default function useLiveMetrics(server) {

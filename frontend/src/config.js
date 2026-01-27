@@ -1,6 +1,6 @@
 const config = window.config || {
     API_BASE_URL: "http://localhost:5000/api",
-    WS_BASE_URL: "ws://localhost:5000"
+    WS_BASE_URL: "http://localhost:5000"
 };
 
 export const API_BASE_URL = config.API_BASE_URL;

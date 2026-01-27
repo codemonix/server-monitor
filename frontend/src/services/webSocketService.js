@@ -3,7 +3,7 @@ import { updateMetrics } from '../redux/slices/metricSlice.js';
 import { logger } from '../utils/log.js';
 import { updateServerDetailMetric } from '../redux/slices/serverDetailsSlice.js';
 
-const WS_URL = import.meta.env.VITE_WS_URL || "http://localhost:4000/ws";
+const WS_URL = window?.config?.WS_BASE_URL || import.meta.env.VITE_WS_URL ;
 
 class WebSocketService {
     constructor () {
@@ -27,7 +27,7 @@ class WebSocketService {
 
         this.isConnecting = true;
         this.token = token;
-        console.log("webSocketService.js -> WS_URL:", WS_URL);
+        console.log("webSocketService.js -> connect -> WS_URL:", WS_URL);
         this.socket = new WebSocket(WS_URL);
 
         this.socket.onopen = () => {
@@ -137,24 +137,6 @@ class WebSocketService {
         const states = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
         return states[this.socket.readyState] || 'UNKNOWN';
     }
-
-    // on(event, cb) {
-    //     if (!this.listeners[event]) this.listeners[event] = [];
-    //     this.listeners[event].push(cb);
-    // }
-
-    // off(event, cb) {
-    //     this.listeners[event] = this.listeners[event]?.filter(fn => fn !== cb );
-    // }
-
-    // emit(event, data) {
-    //     this.listeners[event]?.forEach(fn => fn(data));
-    // }
-
-    // onOpen(cb) { this.on('open', cb); }
-    // onMessage(cb) { this.on('message', cb); }
-    // onClose(cb) { this.on('close', cb); }
-    // onError(cb) { this.on('error', cb); }
 }
 
 const wsService = new WebSocketService();
