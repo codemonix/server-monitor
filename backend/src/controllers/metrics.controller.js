@@ -17,15 +17,6 @@ export async function ingestMetrics(req, res) {
     }
 }
 
-// moved to agents services and contollers
-
-// export async function listServers(req, res) {
-//     const agents = await Agent.find().select('name host ip tags status cpuModel');
-//     const out = agents.map( agent => ({ id: agent._id, name: agent.name, ip: agent.ip, 
-//         tags: agent.tags, status: agent.status, type: 'linux' }));
-//     return res.json(out);
-// }
-
 export async function serverSummery(req, res) {
     const { id } = req.params;
     try {

@@ -30,13 +30,13 @@ services:
     depends_on:
       - mongodb
     environment:
-      # Internal Config
+      # Internal Config from .env
       - PORT=5000
       - MONGODB_URI=${MONGODB_URI}
       # Security Secrets from .env
       - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
       - JWT_AGENT_SECRET=${JWT_AGENT_SECRET}
-      # CORS
+      # CORS from .env
       - CORS_ORIGIN=${CORS_ORIGIN}
     ports:
       # Maps VPS Port 5002 -> Container Port 5000

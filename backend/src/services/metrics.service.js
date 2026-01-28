@@ -23,7 +23,7 @@ export async function insertMetricPoints( payload ) {
     const points = Array.isArray(payload) ? payload : [payload];
 
     // console.log("metrics.service.js -> insertMetricPoints -> received payload:", payload);
-    console.log("metrics.service.js -> insertMetricPoints -> inserting points:", points.length);
+    console.log("metrics.service.js -> insertMetricPoints -> inserting points:", points);
 
     
 
@@ -68,7 +68,7 @@ export async function getServerMetrics( agentId, since ) {
                 { agent: agentId, createdAt: { $gt: since }},
                 null,
                 {
-                    sort: { createdAt: -1 },
+                    sort: { ts: -1 },
                     limit: 500,
                 }
             )
