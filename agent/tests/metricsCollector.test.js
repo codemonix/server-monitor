@@ -49,7 +49,7 @@ describe('metricsCollector', () => {
         dateNowSpy.mockReturnValue(mockTime);
 
         si.currentLoad.mockResolvedValue({ currentLoad: 50 });
-        si.mem.mockResolvedValue({ used: 2048, total: 4096 });
+        si.mem.mockResolvedValue({ active: 2048, total: 4096 });
         si.fsSize.mockResolvedValue([{ used: 100, size: 500 }]);
         si.networkStats.mockResolvedValue([{ rx_bytes: 1000, tx_bytes: 1000 }]);
         si.time.mockResolvedValue({ uptime: 12345 });
@@ -80,7 +80,7 @@ describe('metricsCollector', () => {
         dateNowSpy.mockReturnValue(currentTime);
 
         si.currentLoad.mockResolvedValue({ currentLoad: 10 });
-        si.mem.mockResolvedValue({ used: 100, total: 200 });
+        si.mem.mockResolvedValue({ active: 100, total: 200 });
         si.fsSize.mockResolvedValue([{ used: 10, size: 100 }]);
         si.time.mockResolvedValue({ uptime: 100 });
         os.loadavg.mockReturnValue([0, 0, 0]);
