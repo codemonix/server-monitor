@@ -49,7 +49,7 @@ export async function collectSystemMetrics() {
     return {
         ts: new Date(),
         cpu: cpu.currentLoad ,
-        memUsed: mem.active,
+        memUsed: mem.available ? (mem.total - mem.available) : mem.active,
         memTotal: mem.total,
         diskUsed: disk[0] ? disk[0].used : 0,
         diskTotal: disk[0] ? disk[0].size : 0,

@@ -49,7 +49,7 @@ describe('metricsCollector', () => {
         dateNowSpy.mockReturnValue(mockTime);
 
         si.currentLoad.mockResolvedValue({ currentLoad: 50 });
-        si.mem.mockResolvedValue({ active: 2048, total: 4096 });
+        si.mem.mockResolvedValue({ active: 2048, used: 2048, available: 3000, total: 4096 });
         si.fsSize.mockResolvedValue([{ used: 100, size: 500 }]);
         si.networkStats.mockResolvedValue([{ rx_bytes: 1000, tx_bytes: 1000 }]);
         si.time.mockResolvedValue({ uptime: 12345 });
@@ -61,7 +61,7 @@ describe('metricsCollector', () => {
         expect(metrics).toEqual({
             ts: expect.any(Date),
             cpu: 50,
-            memUsed: 2048,
+            memUsed: 1096,
             memTotal: 4096,
             diskUsed: 100,
             diskTotal: 500,
