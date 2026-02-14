@@ -6,7 +6,6 @@ import Logout from "./pages/Logout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import ServersMertricsPage from "./pages/ServersMetricsPage.jsx";
 import Settings from "./pages/Settings.jsx";
-import WsTestPage from "./pages/WsTestPage.jsx";
 import AgentsPage from "./pages/AgentsPage.jsx";
 
 function App() {
@@ -15,7 +14,6 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<Logout />} />
         <Route element={<ProtectedRoutes />}>
-          <Route path="/test-ws" element={<WsTestPage />} />
           <Route element={<AppLayout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/servers" element={<ServersMertricsPage />} />

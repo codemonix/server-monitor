@@ -1,0 +1,12 @@
+services:
+  monitor-db:
+    image: mongodb/mongodb-community-server:8.0-ubuntu2204
+    container_name: monitor-backend-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - monitor_db_volume:/data/db
+    command: ["--replSet", "monitorRS", "--bind_ip_all"]
+
+volumes:
+  monitor_db_volume: 
