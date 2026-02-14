@@ -17,6 +17,8 @@ export default function Login() {
     const [ err, setErr ] = useState('');
 
     const IS_DEMO = import.meta.env.VITE_IS_DEMO === 'true' || window.config.IS_DEMO;
+    console.log("Login.jsx -> IS_DEMO:", IS_DEMO);
+    console.log("Login.jsx -> window.config:", window.config);
 
     const onSubmit = async (e) => {
         e?.preventDefault();
@@ -46,7 +48,7 @@ export default function Login() {
         <Container maxWidth='xs' >
             <Box mt={12} p={4} boxShadow={3} borderRadius={2} >
                 <Typography variant="h5" mb={2} >
-                   Welcome, Please Sign in
+                    Welcome, Please Sign in
                 </Typography>
                 <form onSubmit={onSubmit} >
                     {IS_DEMO && (
