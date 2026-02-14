@@ -9,7 +9,10 @@
     "seed": "node src/utils/seedAdmin.js",
     "migrate": "node src/migrations/backfillPercentages.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "start:dev": "docker compose -f ../docker-compose.dev.yml up monitor-db -d && echo 'Waiting for DB...' && sleep 5 && nodemon server.js",
+    "docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "db:init": "docker exec -it monitor-backend-db mongosh --eval \"rs.initiate({_id:'monitorRS', members:[{_id:0, host:'127.0.0.1:27017'}]})\""
   },
   "dependencies": {
     "axios": "^1.11.0",

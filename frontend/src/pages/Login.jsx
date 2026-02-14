@@ -16,6 +16,8 @@ export default function Login() {
     const [ busy, setBysy ] = useState(false);
     const [ err, setErr ] = useState('');
 
+    const IS_DEMO = import.meta.env.VITE_IS_DEMO === 'true' || window.config.IS_DEMO;
+
     const onSubmit = async (e) => {
         e?.preventDefault();
         setBysy(true);
@@ -47,7 +49,7 @@ export default function Login() {
                    Welcome, Please Sign in
                 </Typography>
                 <form onSubmit={onSubmit} >
-                    {import.meta.env.VITE_IS_DEMO === 'true' && (
+                    {IS_DEMO && (
                         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg" >
                             <button
                                 type="button"
