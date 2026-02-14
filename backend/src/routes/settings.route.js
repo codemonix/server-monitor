@@ -1,8 +1,11 @@
 import { Router } from "express";
 import authUser from "../middlewares/authUser.middleware.js";
-import { changePassword, getGlobalConfig, updateGlobalConfig } from "../controllers/settings.contoller.js";
+import { changePassword, getGlobalConfig, updateGlobalConfig, getPublicConfig } from "../controllers/settings.contoller.js";
 
 const router = Router();
+
+// Public settings
+router.get('/public', getPublicConfig)
 
 // User profile
 router.put('/profile/password', authUser(), changePassword);

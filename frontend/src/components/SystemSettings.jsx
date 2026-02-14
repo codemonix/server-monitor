@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Box, TextField, Button, Alert, Typography, Paper, Divider, InputAdornment } from "@mui/material";
+import { Box, TextField, Button, Alert, Typography, Paper, Divider, InputAdornment, FormControlLabel, Switch } from "@mui/material";
 import api from "../services/api.js";
 
 export default function SystemSettings() {
-    const [config, setConfig] = useState({ pollingInterval: 5000, batchMaxItems: 10, retentionDays: 30 });
+    const [config, setConfig] = useState({ pollingInterval: 5000, batchMaxItems: 10, retentionDays: 30, isDemoMode: false });
     const [status, setStatus] = useState({ type: '', text: '' });
     const [loading, setLoading] = useState(false);
 
@@ -18,6 +18,7 @@ export default function SystemSettings() {
                 pollingInterval: data.pollingInterval,
                 batchMaxItems: data.batchMaxItems,
                 retentionDays: data.retentionDays,
+                isDemoMode: data.isDemoMode,
             });
         } catch (error) {
             console.error("Failed to load global configuration:", error.message);
@@ -73,6 +74,16 @@ export default function SystemSettings() {
                         }
                     }}
                     helperText="Metrics older than this will be deleted every night."
+                />
+
+                <FormControlLabel 
+                    control={
+                        <Switch 
+                            checked={config.isDemoMode || false}
+                            onChange={(e) => setConfig({ ...config, isDemoMode: e.target.checked })}
+                        />
+                    }
+                    label="Demo Mode (Auto-fill Login)"
                 />
 
                 { status.msg && <Alert severity={status.type}>{status.msg}</Alert>}

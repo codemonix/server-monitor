@@ -5,7 +5,8 @@ const globalConfigSchema = new mongoose.Schema(
         settingsKey: { type: String, required: true, unique: true, default: 'default'},
         pollingInterval: { type: Number, default: 5000 },
         batchMaxItems: { type: Number, default: 10 },
-        retentionDays: { type: Number, default: 30 },
+        retentionDays: { type: Number, default: 30 },   
+        isDemoMode: { type: Boolean, default: false}
     },
     { timestamps: true }
 );

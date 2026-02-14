@@ -31,11 +31,21 @@ export async function getGlobalConfig(req, res) {
 
 export async function updateGlobalConfig(req, res) {
     try {
-        const { pollingInterval, batchMaxItems } = req.body;
-        const config = await settingsService.upsertGlobalConfig({ pollingInterval, batchMaxItems });
+        const { pollingInterval, batchMaxItems, isDemoMode } = req.body;
+        const config = await settingsService.upsertGlobalConfig({ pollingInterval, batchMaxItems, isDemoMode });
         res.json(config);
     } catch (error) {
         logger("user.controller.js -> updateGlobalConfig -> error:", error.message);
         res.status(500).json({ error: 'Failed to update global config'});
+    }
+}
+
+export async function getPublicConfig(req, res) {
+    try {
+        const publicSettings = await settingsService.getPublicSettings();
+        res.json(publicSettings)
+    } catch (error) {
+        logger("Error fetching public settings:", error.message);
+        res.status(500).json({ error: "failed to fetch public config" });
     }
 }

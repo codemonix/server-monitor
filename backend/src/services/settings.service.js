@@ -13,9 +13,28 @@ export async function fetchGloabalConfig() {
 }
 
 export async function upsertGlobalConfig(updates) {
+    console.log("upsertGlobalConfig -> updates:", updates);
     const config = await GlobalConfig.findOneAndUpdate(
         { settingsKey: 'default' },
         updates,
         { upsert: true, new: true }
     )
+}
+
+export async function getPublicSettings() {
+    const config = await GlobalConfig.findOne({ settingsKey: 'default'}).lean();
+
+    return {
+        isDemoMode: config?.isDemoMode || false
+    };
+}
+
+export async function updatePublicSettings(data) {
+    const config = await GlobalConfig.findOneAndUpdate(
+        { settingsKey: 'default' },
+        { $set: data },
+        { new: true, upsert: true }
+    );
+    return config;
+
 }
