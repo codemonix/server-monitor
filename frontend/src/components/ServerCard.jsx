@@ -46,11 +46,11 @@ export default function ServerCard({ server, selected, onClick }) {
                 </Box>
                 <Box display='flex' alignItems='center' gap={1} >
                     <Memory />
-                    <StatusPill value={memPercent} label={`${correctNumToTwo(server.memUsed / (2^1e9))}GB / ${correctNumToTwo(server.memTotal / (2^1e9))}GB` } />
+                    <StatusPill value={memPercent} label={`${correctNumToTwo(server.memUsed / (1024 ** 3))}GB / ${correctNumToTwo(server.memTotal / (2^1e9))}GB` } />
                 </Box>
                 <Box display='flex' alignItems='center' gap={1} >
                     <Storage />
-                    <StatusPill value={diskPercent} label={`${correctNumToTwo(server.diskUsed / (2^1e9))}GB / ${correctNumToTwo(server.diskTotal / (2^1e9))}GB` } />
+                    <StatusPill value={diskPercent} label={`${correctNumToTwo(server.diskUsed / (1024 ** 3))}GB / ${correctNumToTwo(server.diskTotal / (2^1e9))}GB` } />
                 </Box>
                 <Box display='flex' alignItems='center' gap={1} >
                     <AccessTime />

@@ -11,7 +11,6 @@ export default function Settings() {
   const { user } = useAuth();
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }} >
-      {/* <Typography variant="h4" gutterBottom >Settings</Typography> */}
       <Paper square sx={{ mb: 2 }} >
         <Tabs value={tab} onChange={(_, v) => setTab(v)} indicatorColor="primary" textColor="primary" >
           <Tab label="Profile" />

@@ -36,9 +36,6 @@ export default function Dashboard() {
     return (
         <Box display='flex' flexDirection='column' minHeight='95vh' sx={{ bgcolor: 'grey.500', p: 1 }} >
             <Box flex={ selectedServer ? '1 1 50%' : '1 1 auto'} overflow='auto' >
-                <Typography variant="h6" gutterBottom color="white" >
-                    Servers
-                </Typography>
                 <Grid container spacing={1} >
                     {servers.map((serv) => (
                         <Grid 

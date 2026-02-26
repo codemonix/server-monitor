@@ -63,9 +63,10 @@ export default function Login() {
     return (
         <Container maxWidth='xs' >
             <Box mt={12} p={4} boxShadow={3} borderRadius={2} >
-                <Typography variant="h5" mb={2} >
+                <Typography variant="h5" mb={2} align="center" >
                     Welcome, Please Sign in
                 </Typography>
+                <Typography variant="body2" mb={2} align="center" >Real-Time Server Monitoring</Typography>
                 <form onSubmit={onSubmit} >
                     {showDemoLogin && (
                         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg" >

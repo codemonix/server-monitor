@@ -5,7 +5,7 @@ import { logger } from "../utils/log.js";
 import AgentsGrid from "../components/AgentsGrid.jsx";
 import AgentsActionBar from "../components/AgentsActionBar.jsx";
 import { fetchServerStats } from "../redux/thunks/metricsThunks.js";
-import { Tabs, Tab, Box} from "@mui/material";
+import { Tabs, Tab, Box, Typography, Container} from "@mui/material";
 import EnrollmentTokensGrid from "../components/EnrollmentTokensGrid.jsx";
 import AddAgentDialog from "../components/AddAgentDialog.jsx";
 
@@ -111,7 +111,7 @@ export default function AgentsPage() {
     console.log("AgentsPage.jsx -> selectedAgents:", selectedAgents)
 
     return (
-        <Box>
+        <Box sx={{ p: 2 }} >
             <AgentsActionBar 
                 onRefresh={handleRefresh}
                 onAdd={handleAdd}
@@ -119,7 +119,7 @@ export default function AgentsPage() {
                 onDeleteSelected={handleDeleteSelected}
                 disabledDelete={selectedAgents.ids.size === 0}
             />
-            <Box sx={{ width: '100%', p: 2 }} >
+            <Box sx={{ width: '100%' }} >
                 <Tabs value={tab} onChange={handleTabChange} >
                     <Tab label="Agents" />
                     <Tab label="Enrollment Tokens" />

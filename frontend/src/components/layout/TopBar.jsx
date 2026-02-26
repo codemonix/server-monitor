@@ -9,15 +9,25 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import CircularIcon from "@mui/icons-material/Circle";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import SelectAgentsDialog from "../SelectAgentsDialog.jsx";
 
+const getPageTitle = (pathname) => {
+  if (pathname.startsWith('/agents')) return 'Agents Page';
+  if (pathname.startsWith('/servers')) return 'Servers Metrics';
+  if (pathname.startsWith('/settings')) return 'Settings Page';
+  return 'Dashboard'
+}
+
 export default function TopBar({ onMenuClick }) {
   const [ dialogOpen, setDialogOpen ] = useState(false);
-
+  const location = useLocation();
   const { items, hiddenAgentIds } = useSelector(state => state.metrics);
   
   const visisbleAgents = items.filter( a => !hiddenAgentIds.includes(a._id))
+
+  const currentTitle = getPageTitle(location.pathname);
 
   const counts = {
     online: visisbleAgents.filter(a => a.status === 'online').length,
@@ -41,7 +51,7 @@ export default function TopBar({ onMenuClick }) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-              Server Monitor
+              Server Monitor :: {currentTitle}
             </Typography>
           </Box>
 
