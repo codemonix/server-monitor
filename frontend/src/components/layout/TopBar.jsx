@@ -51,7 +51,7 @@ export default function TopBar({ onMenuClick }) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-              Server Monitor :: {currentTitle}
+              SRM&lt;&gt;{currentTitle}
             </Typography>
           </Box>
 
