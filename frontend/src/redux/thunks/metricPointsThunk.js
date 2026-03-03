@@ -11,7 +11,9 @@ export const fetchMetricPoints = createAsyncThunk(
             const pageSize = payload?.pageSize ?? state.metricPoints.pageSize ?? 50;
             const filters = payload?.filters ?? state.metricPoints.filters;
             const sort = payload?.sort ?? state.metricPoints.sort;
-            const res = await api.post('/metrics', { page, pageSize, filters, sort });
+            const res = await api.post('/metrics', { page, pageSize, filters, sort }, {
+                signal: thunkAPI.signal
+            });
             console.log("metricPointsThunk.js -> fetchMetricPoints -> res.data:", res.data);
             return { items: res.data.items || [], total: res.data.total ?? 0, page, pageSize}
         //     console.log("metricPointsThunk.js -> fetchMetricPoints -> filters:", payload);
@@ -21,6 +23,10 @@ export const fetchMetricPoints = createAsyncThunk(
         // } catch (error) {
             // return rejectWithValue(error.response?.data || "Failed to fetch metric points");
         } catch (error) {
+            if (error.name === 'AbortError' || error.name === 'CanceledError') {
+                console.log("metricPointsThunk.js -> fetchMetricPoints -> request canceled to prevent race condition")
+                return thunkAPI.rejectWithValue('Aborted')
+            }
             console.error("metricPointsThunk.js -> fetchMetricPoints -> error:", error.message);
             return thunkAPI.rejectWithValue(error.message || "Failed to fetch metric points");
         }

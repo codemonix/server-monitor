@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Box, Paper, CircularProgress } from "@mui/material";
 
@@ -29,7 +29,12 @@ export default function ServersMertricsPage() {
     // console.log("ServersMertricsPage.jsx -> selected:", selected);
 
     const [ filterPanelOpen, setFilterPanelOpen ] = useState(false);
-    const [ paginationModel, setPaginationModel ] = useState({ page: storePage, pageSize: storePageSize });
+    // const [ paginationModel, setPaginationModel ] = useState({ page: storePage, pageSize: storePageSize });
+
+    const paginationModel = useMemo(() => ({ 
+        page: storePage, pageSize: storePageSize 
+    }), [storePage, storePageSize]);
+    
 
     useEffect(() => {
         dispatch(fetchServerStats());
@@ -50,29 +55,32 @@ export default function ServersMertricsPage() {
 
     useEffect(() => {
         // main page C
-        dispatch(fetchMetricPoints({ 
-            page: paginationModel.page, 
-            limit: paginationModel.pageSize, 
+        const promise = dispatch(fetchMetricPoints({ 
+            page: storePage, 
+            limit: storePageSize, 
             filters 
         }));
-    },[dispatch, paginationModel.page, paginationModel.pageSize, filters]); 
+
+        return () => {
+            promise.abort();
+        }
+    },[dispatch, storePage, storePageSize, filters]); 
 
     // sync external page changes from store to pagination model
 
-    useEffect(() => {
-        setPaginationModel({ page: storePage, pageSize: storePageSize });
-    }, [storePage, storePageSize]);
+    // useEffect(() => {
+    //     setPaginationModel({ page: storePage, pageSize: storePageSize });
+    // }, [storePage, storePageSize]);
 
     const openFilterPanel = () => { setFilterPanelOpen(true); };
     const closeFilterPanel = () => setFilterPanelOpen(false);
     const handleApplyFilters = (newFilters) => {
         dispatch(updateFilters({ ...newFilters}));
-        setPaginationModel((prev) => ({ ...prev, page: 0 }));
+        dispatch(setPage(0));
         closeFilterPanel();
     }
     
     const handlePaginationModelChange = useCallback((model) => {
-        setPaginationModel(model);
         if ( model.page !== undefined && model.page !== storePage ) dispatch(setPage(model.page));
         if ( model.pageSize !== undefined && model.pageSize !== storePageSize ) dispatch(setPageSize(model.pageSize));
     }, [dispatch, storePage, storePageSize]);

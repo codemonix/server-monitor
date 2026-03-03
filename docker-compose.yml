@@ -24,7 +24,7 @@ services:
 
   # Backend
   backend:
-    image: ghcr.io/codemonix/server-monitor/srm-backend:latest
+    image: ghcr.io/codemonix/server-monitor/srm-backend:${APP_VERSION:-latest}
     container_name: srm-backend
     restart: unless-stopped
     depends_on:
@@ -51,7 +51,7 @@ services:
 
   # Frontend
   frontend: 
-    image: ghcr.io/codemonix/server-monitor/srm-frontend:latest
+    image: ghcr.io/codemonix/server-monitor/srm-frontend:${APP_VERSION:-latest}
     container_name: srm-frontend
     restart: unless-stopped
     depends_on:
