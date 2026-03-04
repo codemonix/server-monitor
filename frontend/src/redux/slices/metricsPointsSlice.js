@@ -85,6 +85,9 @@ const metricPointsSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchMetricPoints.rejected, (state, action) => {
+                if (action.meta.aborted || action.error.name === 'AbortError') {
+                    return;
+                }
                 state.loading = false;
                 state.error = action.payload || action.error.message || "Failed to fetch metric points";
             });

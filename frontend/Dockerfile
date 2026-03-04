@@ -2,6 +2,11 @@
 # Build
 FROM node:20-alpine AS build
 WORKDIR /app
+
+# Catching and injecting the app version
+ARG APP_VERSION
+ENV VITE_APP_VERSION=$APP_VERSION
+
 COPY package*.json ./
 RUN npm ci
 COPY . .

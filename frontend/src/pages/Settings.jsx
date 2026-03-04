@@ -9,14 +9,21 @@ import { useAuth } from "../context/AuthContext.jsx";
 export default function Settings() {
   const [tab, setTab] = useState(0);
   const { user } = useAuth();
+
+  const appVersion = import.meta.env.VITE_APP_VERSION || 'Development Build';
+
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }} >
-      <Paper square sx={{ mb: 2 }} >
+      <Paper square sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }} >
         <Tabs value={tab} onChange={(_, v) => setTab(v)} indicatorColor="primary" textColor="primary" >
           <Tab label="Profile" />
           {user?.role === 'admin' && <Tab label="System & Agents" />}
           {user?.role === 'admin' && <Tab label="Users" />}
         </Tabs>
+        <Box  >
+          <Typography variant="caption" color="textSecondary" >{appVersion}</Typography>
+        </Box>
       </Paper>
 
       <Box role="tabpanel" hidden={tab !== 0} >

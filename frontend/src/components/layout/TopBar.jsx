@@ -14,9 +14,9 @@ import { useSelector } from "react-redux";
 import SelectAgentsDialog from "../SelectAgentsDialog.jsx";
 
 const getPageTitle = (pathname) => {
-  if (pathname.startsWith('/agents')) return 'Agents Page';
+  if (pathname.startsWith('/agents')) return 'Agents';
   if (pathname.startsWith('/servers')) return 'Servers Metrics';
-  if (pathname.startsWith('/settings')) return 'Settings Page';
+  if (pathname.startsWith('/settings')) return 'Settings';
   return 'Dashboard'
 }
 
@@ -58,16 +58,16 @@ export default function TopBar({ onMenuClick }) {
           {/* Right side: indicators & Button */}
           <Box display="flex" flexDirection="row" alignItems="center" gap={3} >
             {/* Status indicators */}
-            <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap={2} sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 2, py: 1, borderRadius: 2 }} >
-              <Box display="flex" alignItems="center" gap={0.5} title="Online">
+            <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap={1}  >
+              <Box display="flex" alignItems="center" gap={0.5} title="Online" sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 0.75, py: 1, borderRadius: 2 }}>
                 <CircularIcon sx={{ fontSize: 12, color: '#4caf50' }} />
                 <Typography variant="body2" fontWeight="bold" >{counts.online}</Typography>
               </Box>
-              <Box display="flex" alignItems="center" gap={0.5} title="Warning" >
+              <Box display="flex" alignItems="center" gap={0.5} title="Warning" sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 0.75, py: 1, borderRadius: 2 }}>
                 <CircularIcon sx={{ fontSize: 12, color: '#ff9800' }} />
                 <Typography variant="body2" fontWeight="bold" >{counts.warning}</Typography>
               </Box>
-              <Box display="flex" alignItems="center" gap={0.5} title="Offline" >
+              <Box display="flex" alignItems="center" gap={0.5} title="Offline" sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 0.75, py: 1, borderRadius: 2 }} >
                 <CircularIcon sx={{ fontSize: 12, color: '#f44336' }} />
                 <Typography variant="body2" fontWeight="bold" >{counts.offline}</Typography>
               </Box>
