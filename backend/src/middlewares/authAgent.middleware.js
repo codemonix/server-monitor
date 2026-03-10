@@ -5,7 +5,7 @@ import logger from "../utils/logger.js";
 export async function authAgentJwt(req, res, next) {
     const authHeader = req.headers['authorization'];
     if ( !authHeader || !authHeader.startsWith('Bearer ') ) {
-        logger("authAgent.middleware.js -> Missing or invalid authorization header");
+        logger.info("authAgent.middleware.js -> Missing or invalid authorization header");
         return res.status(401).json({ error: 'missing or invalid authorization header' });
     }
 
@@ -15,14 +15,14 @@ export async function authAgentJwt(req, res, next) {
         const agent = await Agent.findById(decoded.sub);
 
         if (!agent) {
-            logger("authAgent.middleware.js -> Agent not found");
+            logger.info("authAgent.middleware.js -> Agent not found");
             return res.status(401).json({ error: 'agent not found' });
         }
         req.agent = agent;
-        logger("authAgent.middleware.js -> Agent authenticated successfully:", agent._id);
+        logger.info("authAgent.middleware.js -> Agent authenticated successfully:", {agentId: agent._id});
         next();
     } catch (error) {
-        logger("authAgent.middleware.js -> Error during authentication:", error);
+        logger.error("authAgent.middleware.js -> Error during authentication:", {error: error});
         return res.status(401).json({ error: 'invalid or expired token' });
     }
 }

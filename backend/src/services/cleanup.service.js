@@ -5,7 +5,7 @@ import logger from '../utils/logger.js';
 
 export function startCleanupJob() {
     corn.schedule("0 0 0 * * *", async () => {
-        logger("cleanup.service.js -> Startingdaily data cleanup ...");
+        logger.info("cleanup.service.js -> Startingdaily data cleanup ...");
         try {
             const config = await GlobalConfig.findOne({ settingsKey: 'default' });
             const days = config?.retentionDays || 30;
@@ -14,10 +14,10 @@ export function startCleanupJob() {
             cutoffDate.setDate(cutoffDate.getDate() - days);
 
             const result = await MetricPoints.deleteMany({ ts: { $lt: cutoffDate } });
-            logger(`cleanup.service.js -> Cleanup complete. Deleted ${result.deletedCount} metrics olser than ${days} days. `);
+            logger.info('cleanup.service.js -> Cleanup complete. Deleted', {metrics: result.deletedCount});
 
         } catch (error) {
-            logger("cleanup.service.js -> error:", error.message);
+            logger.error("cleanup.service.js ->", {error: error.message});
         }
     })
 }

@@ -4,7 +4,6 @@ import api from '../services/api.js';
 import { Container, Box, TextField, Button, Typography } from "@mui/material";
 import { logger } from '../utils/log.js';
 import { useAuth } from "../context/AuthContext.jsx";
-// import { setAuthToken } from "../services/api.js";
 
 export default function Login() {
     const { login } = useAuth();
@@ -13,29 +12,38 @@ export default function Login() {
     const from = loc.state?.from?.pathname || '/';
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
-    const [ busy, setBysy ] = useState(false);
+    const [ busy, setBusy ] = useState(false);
     const [ err, setErr ] = useState('');
     const [ showDemoLogin, setShowDemoLogin] = useState(false);
 
 
     useEffect(() => {
+        // Check if system needs setup
+        api.get('/auth/setup-status')
+            .then(res => {
+                if (!res.data.isSetupComplete) {
+                    nav('/setup', { replace: true });
+                }
+            })
+            .catch(err => logger.error("Setup check failed", err.message));
+
         api.get('settings/public')
             .then(res => {
-                console.log("Login.jsx -> res.data:", res.data);
+                logger.debug("Login.jsx -> res.data:", res.data);
                 if (res.data.isDemoMode) {
                     setShowDemoLogin(true);
                 }
             })
-            .catch(err => console.error("Failed to check demo mode:", err.message));
-    })
+            .catch(err => logger.error("Failed to check demo mode:", err.message));
+    }, [nav]);
 
     const IS_DEMO = import.meta.env.VITE_IS_DEMO === 'true' || window.config.IS_DEMO;
-    console.log("Login.jsx -> IS_DEMO:", IS_DEMO);
-    console.log("Login.jsx -> window.config:", window.config);
+    logger.debug("Login.jsx -> IS_DEMO:", IS_DEMO);
+    logger.debug("Login.jsx -> window.config:", window.config);
 
     const onSubmit = async (e) => {
         e?.preventDefault();
-        setBysy(true);
+        setBusy(true);
         setErr('');
         try {
             const res = await login( email, password );
@@ -45,10 +53,10 @@ export default function Login() {
                 setErr("Invalid Credentials");
             }
         } catch (error) {
-            logger.error(error.message);
+            logger.error("Login.jsx -> onSubmit -> error:", error.message);
             setErr("Login failes"); 
         } finally {
-            setBysy(false);
+            setBusy(false);
         }
     };
 
@@ -57,7 +65,7 @@ export default function Login() {
         setPassword("demo123");
     }
 
-    console.log("Login.jsx -> showDemoLogin:", showDemoLogin);
+    logger.debug("Login.jsx -> showDemoLogin:", showDemoLogin);
 
 
     return (

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, TextField, Button, Alert, Typography, Paper, Divider, InputAdornment, FormControlLabel, Switch } from "@mui/material";
 import api from "../services/api.js";
+import { logger } from "../utils/log.js";
 
 export default function SystemSettings() {
     const [config, setConfig] = useState({ pollingInterval: 5000, batchMaxItems: 10, retentionDays: 30, isDemoMode: false });
@@ -21,7 +22,7 @@ export default function SystemSettings() {
                 isDemoMode: data.isDemoMode,
             });
         } catch (error) {
-            console.error("Failed to load global configuration:", error.message);
+            logger.error("Failed to load global configuration:", error.message);
         }
     }
 

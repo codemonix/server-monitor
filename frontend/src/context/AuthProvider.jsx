@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
         ( async () => {
             try {
                 const { user, accessToken, ttl } = await refreshTokenApi();
-                console.log("AuthProvider -> initial", user );
+                logger.debug("AuthProvider -> initial", user );
                 
                 if ( accessToken && ttl ) {
                     setTokenManagerAccessToken(accessToken, ttl);
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
                 setAccessTokenState(null);
                 setUserState(null);
                 navigate('/login', { replace: true });
-                logger.info("AuthProvider.js -> useEffect -> Initial token refresh failed:", error);
+                logger.error("AuthProvider.js -> useEffect -> Initial token refresh failed:", error);
             } finally {
                 setLoading(false);
             }

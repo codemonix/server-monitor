@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchMetricPoints } from "../thunks/metricPointsThunk.js";
+import { logger } from "../../utils/log.js";
 
 
 
@@ -29,33 +30,20 @@ const initialState = {
 const metricPointsSlice = createSlice({
     name: "metricPoints",
     initialState,
-    // initialState: {
-    //     items: [],
-    //     loading: false,
-    //     error: null,
-    //     filters: {
-    //         agentIds: [],
-    //         search: "",
-    //         ranges: {},
-    //         page: 0,
-    //         pageSize: 20,
-    //     },
-    //     totalCount: 0,
-    // },
     reducers: {
         updateFilters: (state, action) => {
             state.filters = { ...state.filters, ...action.payload };
             state.page = 0; // reset to first page on filter change
-            console.log("metricPointsSlice.js -> updateFilters -> new filters:", state.filters);
+            logger.debug("metricPointsSlice.js -> updateFilters -> new filters:", state.filters);
         },
         setPage: (state, action) => {
             state.page = action.payload;
-            console.log("metricPointsSlice.js -> setPage -> new page:", state.page);
+            logger.debug("metricPointsSlice.js -> setPage -> new page:", state.page);
         },
         setPageSize: (state, action) => {
             state.pageSize = action.payload;
             state.page = 0;
-            console.log("metricPointsSlice.js -> setPageSize -> new pageSize:", state.pageSize);
+            logger.debug("metricPointsSlice.js -> setPageSize -> new pageSize:", state.pageSize);
         },
         clearItems: (state) => {
             state.items = [];
@@ -76,7 +64,7 @@ const metricPointsSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchMetricPoints.fulfilled, (state, action) => {
-                console.log("metricPointsSlice.js -> fetchMetricPoints.fulfilled -> action.payload:", action.payload);
+                logger.debug("metricPointsSlice.js -> fetchMetricPoints.fulfilled -> action.payload:", action.payload);
                 state.loading = false;
                 state.items = action.payload.items;
                 state.page = action.payload.page;

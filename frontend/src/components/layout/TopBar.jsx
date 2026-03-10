@@ -58,7 +58,7 @@ export default function TopBar({ onMenuClick }) {
           {/* Right side: indicators & Button */}
           <Box display="flex" flexDirection="row" alignItems="center" gap={3} >
             {/* Status indicators */}
-            <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap={1}  >
+            <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap={0.5}  >
               <Box display="flex" alignItems="center" gap={0.5} title="Online" sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 0.75, py: 1, borderRadius: 2 }}>
                 <CircularIcon sx={{ fontSize: 12, color: '#4caf50' }} />
                 <Typography variant="body2" fontWeight="bold" >{counts.online}</Typography>

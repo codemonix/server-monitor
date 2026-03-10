@@ -23,7 +23,7 @@ export async function insertMetricPoints( payload ) {
     const points = Array.isArray(payload) ? payload : [payload];
 
     // console.log("metrics.service.js -> insertMetricPoints -> received payload:", payload);
-    console.log("metrics.service.js -> insertMetricPoints -> inserting points:", points);
+    logger.info("metrics.service.js -> insertMetricPoints -> received payload");
 
     
 
@@ -49,10 +49,10 @@ export async function insertMetricPoints( payload ) {
 
     try {
         const result = await MetricPoint.insertMany(mapped, { ordered: false });
-        logger("metrics.service.js -> inserted metrics:", result.length)
+        logger.info("metrics.service.js -> ", {"inserted metrics":result.length})
         return result.length;
     } catch (error) {
-        logger("metrics.services.js -> insertMetricPoints: inserting to DB failed:", error.message);
+        logger.error("metrics.services.js -> insertMetricPoints: inserting to DB failed:",{error: error.message});
         throw error;
     }
 }
@@ -79,7 +79,7 @@ export async function getServerMetrics( agentId, since ) {
 
             const lastTs = points.at(-1)?.ts || since;
 
-            logger("metrics,services.js -> getServerMetrics -> points:", points.length);
+            logger.info("metrics,services.js -> getServerMetrics ->", {"points count": points.length});
             return { points, lastTs };
 }
 
@@ -135,13 +135,13 @@ export async function getServersWithInitStat() {
     }
     ]);
 
-    console.log("metrics.service.js -> getServersWithInitStat -> fetched agents:", agents.length);
+    logger.info("metrics.service.js -> getServersWithInitStat -> fetched agents:", {n: agents.length});
 
     return agents;
 }
 
 function buildMatchFromFilters( body = {} ) {
-    console.log("metrics.service.js -> buildMatchFromFilters -> body:", body);
+    logger.debug("metrics.service.js -> buildMatchFromFilters ->", {body: body});
     
     const q = {};
 
@@ -187,12 +187,12 @@ function buildMatchFromFilters( body = {} ) {
             if ( Object.keys(dateQuery).length > 0 ) q.ts = dateQuery;
         }
     
-        console.log("metrics.service.js -> buildMatchFromFilters -> built query:", q);
+        logger.debug("metrics.service.js -> buildMatchFromFilters -> built query:", q);
     
         return q;
 
     } catch (error) {
-        console.error("metrics.service.js -> buildMatchFromFilters -> error:", error.message);
+        logger.error("metrics.service.js -> buildMatchFromFilters ->", { error: error.message });
         throw error;
     }
         
@@ -201,7 +201,7 @@ function buildMatchFromFilters( body = {} ) {
 
 export async function getFilteredMetrics({ page = 0, pageSize = 50, filters = {}, sort = { field: "ts", order: 'desc' }} = {}) {
 
-    console.log("metrics.service.js -> getFilteredMetrics -> filters:", filters);
+    logger.debug("metrics.service.js -> getFilteredMetrics -> ", {filters: filters});
 
     const match = buildMatchFromFilters(filters);
 
@@ -265,9 +265,8 @@ export async function getFilteredMetrics({ page = 0, pageSize = 50, filters = {}
 
     const items = await MetricPoint.aggregate(pipeline).exec();
 
-    console.log("metrics.service.js -> filteredMetrics -> fetched items:", items.length);
-    console.log("metrics.service.js -> filteredMetrics -> match object:", match);
-    console.log("metrics.service.js -> filteredMetrics -> last item ts:", items.length > 0 ? items[0].ts : null);
+    logger.debug("metrics.service.js -> filteredMetrics -> ", {"fetched items": items.length});
+    logger.debug("metrics.service.js -> filteredMetrics -> match object:", {match});
 
     // get total count
     const total = await MetricPoint.countDocuments(match);
@@ -282,7 +281,7 @@ export async function deleteMetricsByAgentId(agentId) {
         const result = await MetricPoint.deleteMany({ agent: agentId });
         return result;
     } catch (error) {
-        console.error("metrics.service.js -> deleteMetricsByAgentId -> error:", error.message);
+        logger.error("metrics.service.js -> deleteMetricsByAgentId ->", {error: error.message});
         throw error;
     }
 }

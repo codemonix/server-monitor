@@ -58,8 +58,8 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}/${{ matrix.image_name }}
           tags: |
-            type=raw,value=latest
             type=raw,value=${{ needs.versioning.outputs.new_tag }}
+            type=raw,value=latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

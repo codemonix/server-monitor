@@ -3,6 +3,8 @@ import app from '../app.js';
 import EnrollmentToken from '../models/EnrollmentToken.model.js';
 import User from '../models/User.model.js';
 import { connectTestDB, closeTestDB, clearTestDB } from './setup.js';
+import logger from '../utils/logger.js';
+
 
 beforeAll( async () => await connectTestDB());
 afterEach( async () => await clearTestDB());
@@ -44,7 +46,7 @@ describe('Enrollment Race Condition', () => {
 
         const [ res1, res2 ] = await Promise.all([ request1, request2 ]);
 
-        console.log(`Request1 status code: ${res1.status} , Request2 status code: ${res2.status}`)
+        logger.debug('Request status code:', {Request1: res1.status, Request2: res2.status});
         // One req should succes and one fail
         const successCount = [ res1.status, res2.status ].filter(code => code === 201).length;
         const failureCount = [ res1.status, res2.status ].filter(code => code === 400 || code === 500 || code === 401).length;

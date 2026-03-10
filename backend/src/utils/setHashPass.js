@@ -1,6 +1,7 @@
 import mongoose from "mongoose"; 
 import User from "../models/User.model.js";
 import dotenv from 'dotenv';
+import logger from "./logger.js";
 dotenv.config();
 const MONGO_URI =  process.env.MONGO_URI || 'mongodb://localhost:27017/server_monitor';
 
@@ -14,4 +15,4 @@ await user.setPassword('admin123');
 await user.save();
 mongoose.disconnect();
 
-console.log("Password updated for email:", user.email);
+logger.info("setHashPass.js -> Password updated for ", {email: user.email});

@@ -18,7 +18,6 @@ export default function AgentsPage() {
     const loading = useSelector((state) => state.metrics.state === "loading");
 
     const [ selectedAgents, setSelectedAgents ] = useState({ type: 'include', ids: new Set() });
-    // const [ trySetForAgents, setTrySetForAgents ] = useState( new Set())
 
     const [ tab, setTab ] = useState(0);
     const [ enrollmentTokens, setEnrollmentTokens ] = useState([]);
@@ -43,7 +42,7 @@ export default function AgentsPage() {
     const fetchEnrollmentTokens = async () => {
         try {
             const res = await api.get('/agents/enrollment-tokens');
-            console.log("AgentsPage.jsx -> fetchEnrollmentTokens -> res.data:", res.data);
+            logger.debug("AgentsPage.jsx -> fetchEnrollmentTokens -> res.data:", res.data);
             setEnrollmentTokens(res.data);
         } catch (error) {
             logger.error("AgentsPage.jsx -> fetchEnrollmentTokens -> error:", error.message);
@@ -53,7 +52,7 @@ export default function AgentsPage() {
     const handleAdd = async () => {
         try {
             const res = await api.post('/agents/enrollment');
-            console.log("AgentsPage.jsx -> handleAdd -> res.data:", res.data.token);
+            logger.debug("AgentsPage.jsx -> handleAdd -> res.data.token:", !!res.data.token);
             const createdToken = res.data.token;
             setNewToken(createdToken);
             setIsTokenDialogOpen(true);
@@ -63,8 +62,7 @@ export default function AgentsPage() {
             logger.error("AgentsPage.jsx -> handleAdd -> error creating enrollment token:", error.message);
             alert("Failed to create enrollment token.");
         }
-        // placeholder
-        console.log("Add agent clicked");
+        logger.debug("AgentsPage.jsx -> handleAdd -> Add agent clicked");
     }
 
     const handleCopy = useCallback(() => {
@@ -94,7 +92,7 @@ export default function AgentsPage() {
     }
 
     const handleDeleteSelected = async () => {
-        console.log("AgentsPage.jsx -> handleDeleteSelected -> selectedAgents:", selectedAgents);
+        logger.debug("AgentsPage.jsx -> handleDeleteSelected -> selectedAgents:", selectedAgents);
         if (!selectedAgents || selectedAgents.length === 0) return;
         if (!window.confirm(`Delete ${selectedAgents.ids.size} selected agent(s) and related metrics?`)) return;
 
@@ -108,7 +106,7 @@ export default function AgentsPage() {
         }
     };
 
-    console.log("AgentsPage.jsx -> selectedAgents:", selectedAgents)
+    logger.debug("AgentsPage.jsx -> selectedAgents:", selectedAgents);
 
     return (
         <Box sx={{ p: 2 }} >
@@ -132,12 +130,6 @@ export default function AgentsPage() {
                             rowSelectionModel={selectedAgents}
                             onRowSelectionModelChange={(newSelection) => {
                                 console.log("AgentsPage.jsx -> onRowSelectionModelChange -> newSelection:", newSelection);
-                                // if (Array.isArray(newSelection) && newSelection.ids) {
-                                //     const idsArray = Array.from(newSelection.ids);
-                                //     setSelectedAgents(idsArray);
-                                // } else {
-                                //     setSelectedAgents(newSelection);
-                                // }
                                 setSelectedAgents(newSelection);
                         }}
                     />

@@ -1,5 +1,5 @@
 import GlobalConfig from '../models/GlobalConfig.model.js';
-import logger from '../utils/logger.js';
+import logger, { updateLoggerSettings } from '../utils/logger.js';
 
 
 
@@ -9,16 +9,35 @@ export async function fetchGloabalConfig() {
     if (!config) {
         config = await GlobalConfig.create({ settingsKey: 'default' });   
     }
+
+    updateLoggerSettings({
+        level: config.logLevel,
+        saveToFile: config.logToFile,
+        retentionDays: config.logRetentionDays,
+        maxFileSize: config.logMaxFileSize
+    });
+
     return config;
 }
 
 export async function upsertGlobalConfig(updates) {
-    console.log("upsertGlobalConfig -> updates:", updates);
+    logger.debug("settings.service.js -> upsertGlobalConfig", {updates});
     const config = await GlobalConfig.findOneAndUpdate(
         { settingsKey: 'default' },
         updates,
         { upsert: true, new: true }
-    )
+    );
+
+    logger.debug("settings.service.js -> upsertGlobalConfig -> config:", {config});
+
+    updateLoggerSettings({
+        level: config.logLevel,
+        saveToFile: config.logToFile,
+        retentionDays: config.logRetentionDays,
+        maxFileSize: config.logMaxFileSize
+    });
+
+    return config;
 }
 
 export async function getPublicSettings() {

@@ -1,19 +1,21 @@
 import { Paper, Typography  } from "@mui/material";
 import ReactEcharts from 'echarts-for-react';
 import { useMemo, useRef } from "react";
+import { logger } from "../utils/log";
 
 export default function MultiMetricChart({ title, selected, chartData }) {
 
-    console.log("MultiMetricChart.jsc -> chartData:", chartData)
-    console.log("MultiMetricChart.jsx -> title:", title);
+    logger.debug("MultiMetricChart.jsc -> chartData:", chartData)
+    logger.debug("MultiMetricChart.jsx -> title:", title);
+    logger.info("MultiMetricChart loded");
 
     const zoomRef = useRef({ start: 0, end: 100 });
 
     
     const series = useMemo(() => {
 
-        console.log("MultiMetricChart.jsx -> selected:", selected);
-        console.log("MultiMetricChart.jsx -> chartData:", chartData);
+        logger.debug("MultiMetricChart.jsx -> selected:", selected);
+        logger.debug("MultiMetricChart.jsx -> chartData:", chartData);
 
         if (!chartData) return [];
 
@@ -36,7 +38,6 @@ export default function MultiMetricChart({ title, selected, chartData }) {
                 return {
                     name: config.label,
                     type: 'line',
-                    // symbol: 'none',
                     symbol: 'circle',
                     symbolSize: 8,
                     showSymbol: false,
@@ -55,7 +56,7 @@ export default function MultiMetricChart({ title, selected, chartData }) {
 
     const options = useMemo(() => {
 
-        console.log("MultiMetricChart.jsx -> options -> series:", series);
+        logger.debug("MultiMetricChart.jsx -> options -> series:", series);
 
 
         if (series.length === 0) {
@@ -139,7 +140,6 @@ export default function MultiMetricChart({ title, selected, chartData }) {
                 {
                     type: "value",
                     min: 0,
-                    // max: 5400,
                     position: 'right',
 
                 }
@@ -158,10 +158,9 @@ export default function MultiMetricChart({ title, selected, chartData }) {
     }
 
     const hasData = chartData && Object.values(chartData).some(arr => arr && arr.length > 0);
-    console.log("MultiMetricChart.jsx -> hasData:", hasData);
+    logger.debug("MultiMetricChart.jsx -> hasData:", hasData);
     if (!hasData) {
         return (
-            // { title: { text: "No Metrics Selected", left: 'center' } }
             <Typography sx={{ p: 2, textAlign: 'center'}} variant="body2" >
                 No Data Available. 
             </Typography>
@@ -172,9 +171,6 @@ export default function MultiMetricChart({ title, selected, chartData }) {
 
     return (
         <Paper sx={{ mb: 1 }} >
-            {/* <Typography variant="subtitle2" mb={1} >
-                {title}
-            </Typography> */}
             <ReactEcharts 
                 option={options}
                 notMerge={false}

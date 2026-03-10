@@ -4,6 +4,7 @@ import { Box, Typography, Tabs, Tab, Paper, Container } from "@mui/material";
 import ProfileSettings from "../components/ProfileSettings.jsx";
 import SystemSettings from "../components/SystemSettings.jsx";
 import UserSettings from "../components/UserSettings.jsx";
+import SystemLogsSettings from "../components/SystemLogsSettings.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Settings() {
@@ -19,6 +20,7 @@ export default function Settings() {
         <Tabs value={tab} onChange={(_, v) => setTab(v)} indicatorColor="primary" textColor="primary" >
           <Tab label="Profile" />
           {user?.role === 'admin' && <Tab label="System & Agents" />}
+          {user?.role === 'admin' && <Tab label="System Logs" />}
           {user?.role === 'admin' && <Tab label="Users" />}
         </Tabs>
         <Box  >
@@ -33,7 +35,10 @@ export default function Settings() {
         {tab === 1 && user?.role === 'admin' && <SystemSettings />}
       </Box>
       <Box role="tabpanel" hidden={tab !== 2} >
-        {tab === 2 && user?.role === 'admin' && <UserSettings />}
+        {tab === 2 && user?.role === 'admin' && <SystemLogsSettings />}
+      </Box>
+      <Box role="tabpanel" hidden={tab !== 3} >
+        {tab === 3 && user?.role === 'admin' && <UserSettings />}
       </Box>
     </Container>
   )

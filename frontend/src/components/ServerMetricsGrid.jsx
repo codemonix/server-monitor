@@ -1,6 +1,7 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import CustomPagination from "./CustomPaginationFooter.jsx";
+import { logger } from "../utils/log.js";
 
 const columns = [
     { field: "agentName", headerName: "Agent", width: 160 },
@@ -27,7 +28,7 @@ export default function ServerMetricsGrid({
     onPaginationModelChange,
 })  {
 
-    console.log("ServerMetricsGrid.jsx -> paginationModel:", paginationModel ?? "not set");
+    logger.debug("ServerMetricsGrid.jsx -> paginationModel:", paginationModel ?? "not set");
 
     return (
         <Box sx={{ height: "72vh", width: "100%" }}  >

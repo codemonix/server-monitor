@@ -17,9 +17,7 @@ export function StatusPill({ value, label }) {
                 fontSize: '0.75rem',
                 fontWeight: 500,
                 lineHeight: 1.2,
-                // display: 'inline-block',
                 minWidth: '60px',
-                // height: '20px',
                 textAlign: 'center',
                 overflow: "hidden",
             }}

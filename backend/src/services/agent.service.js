@@ -11,14 +11,14 @@ export async function getAgentsList() {
         const agents = await Agent.find();
         return agents
     } catch (error) {
-        console.log("agent.service.js -> getAgentsList -> error:", error.message);
+        logger.error("agent.service.js -> getAgentsList ->", {error: error.message});
         throw error;
     }
 }
 
 export async function delAgent(id) {
 
-    console.log("agent.service.js -> delAgent -> deleting agent and related metrics:", id );
+    logger.debug("agent.service.js -> delAgent -> deleting agent and related metrics:", id );
 
     try {
 
@@ -32,12 +32,13 @@ export async function delAgent(id) {
         return deletedAgents;
 
     } catch (error) {
-        console.log("agent.service.js -> delAgent -> error:", error.message);
+        logger.error("agent.service.js -> delAgent ->", { error: error.message });
         throw error;
     }
 }
 
 export async function refreshSession(refreshToken) {
+    logger.info("agent.service.js -> refreshSession -> refreshing session")
     const newTokens = await agentJwtService.refreshTokens(refreshToken);
     if (!newTokens) return null;
     

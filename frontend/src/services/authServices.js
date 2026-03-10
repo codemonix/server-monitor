@@ -25,10 +25,8 @@ export const loginApi = async ( email, password ) => {
 
 export const refreshTokenApi = async () => {
     try {
-        // const stack = new Error().stack;
-        // console.log("suthServices.js -> refreshtokenApi called", Date.now(), stack);
         const { data } = await api.post('/auth/refresh-token');
-        console.log("refreshTokenApi -> token refreshed", data.access);
+        logger.debug("refreshTokenApi -> token refreshed", !!data.access);
         return { accessToken: data.access, ttl: data.ttl, user: data.user };
     } catch ( error ) {
         logger.error("authServices.js -> rereshTokenApi -> token refresh failed:", error.message);
@@ -38,8 +36,8 @@ export const refreshTokenApi = async () => {
 export const logoutApi = async () => {
     try {
         await api.post('/auth/logout');
-        logger.debug("logout successful");
+        logger.info("logout successful");
     } catch ( error ) {
-        logger.error("logout failed:", error.message);
+        logger.error("authServices.js -> logoutApi -> logout failed:", error.message);
     }
 }

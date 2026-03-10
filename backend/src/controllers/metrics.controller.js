@@ -1,18 +1,22 @@
-// import MetricPoint from '../models/MetricPoint.model.js';
-import { insertMetricPoints, getServerSummery, getServerMetrics, getServersWithInitStat, getFilteredMetrics } from '../services/metrics.service.js';
-// import Agent from '../models/Agent.model.js';
+
+import { 
+    insertMetricPoints, 
+    getServerSummery, 
+    getServerMetrics, 
+    getServersWithInitStat, 
+    getFilteredMetrics } from '../services/metrics.service.js';
 import logger from '../utils/logger.js';
 
 export async function ingestMetrics(req, res) {
     const agent = req.agent;
-    logger(`metrics.controller.js -> Ingesting metrics from agent ${agent}`);
-    logger(`metrics.controller.js -> Payload: ${req.body}`);
+    logger.info("metrics.controller.js -> Ingesting metrics from agent", {agent});
+    logger.debug("metrics.controller.js -> Payload:", {body: req.body});
 
     try {
         const insertedCount = await insertMetricPoints( req.body);
         return res.json({ inserted: insertedCount });
     } catch (error) {
-        console.error("metrics.controller.js -> ingestMetrics -> inserting metrics failed:", error.message);
+        logger.error("metrics.controller.js -> ingestMetrics -> inserting metrics failed:", {error: error.message});
         return res.status(500).json({ error: "Failed to ingest metrics"});
     }
 }
@@ -23,7 +27,7 @@ export async function serverSummery(req, res) {
         const last = await getServerSummery(id);
         return res.json(last);
     } catch (error) {
-        console.error("metrics.controller.js -> serverSummery -> query failed:", error.message)
+        logger.error("metrics.controller.js -> serverSummery -> query failed:", {error: error.message})
         return res.status(500).json({ error: "Failed to load metrics"});
     }
     
@@ -41,7 +45,7 @@ export async function serverMetrics(req, res) {
         const { points, lastTs } = await getServerMetrics( agentId, since );
         return res.json({ points, lastTs });
     } catch {
-        logger("metrics.controller.js -> serverMetrics -> query failed:", error.message)
+        logger.error("metrics.controller.js -> serverMetrics -> query failed:", {error: error.message})
         return res.status(500).json({ error: "Failed to load metrics"});
     }
 }
@@ -50,11 +54,11 @@ export async function serversWithInitStat(req, res) {
     try {
         const agents = await getServersWithInitStat();
 
-        console.log("metrics.controller.js -> serversWithInitStat -> total agents:", agents.length);
+        logger.debug("metrics.controller.js -> serversWithInitStat -> total agents:", {n: agents.length});
 
         return res.json(agents);
     } catch (err) {
-        console.error(err);
+        logger.error("metrics.controller.js -> serversWithInitStat -> query failed:", {error: err.message})
         return res.status(500).json({ error: "Failed to fetch agents"})
     }
 }
@@ -62,7 +66,7 @@ export async function serversWithInitStat(req, res) {
 export async function filteredMetrics(req, res) {
     
 
-    console.log("metrics.controller.js -> filteredMetrics -> req.body:", req.body);
+    logger.debug("metrics.controller.js -> filteredMetrics", {"req.body": req.body});
 
     try {
 
@@ -76,8 +80,8 @@ export async function filteredMetrics(req, res) {
         
 
 
-        console.log("metrics.controller.js -> filteredMetrics -> number of items:", items.length);
-        console.log("metrics.controller.js -> filteredMetrics -> total:", total);
+        logger.debug("metrics.controller.js -> filteredMetrics -> number of items:", {n: items.length});
+        logger.debug("metrics.controller.js -> filteredMetrics -> total:", {total});
 
 
         return res.json({
@@ -87,7 +91,7 @@ export async function filteredMetrics(req, res) {
         });
 
     } catch (error) {
-        console.error("metrics.controller.js -> metrics -> query failed:", error)
+        ("metrics.controller.js -> metrics -> query failed:", error)
         return res.status(500).json({ error: "Failed to load metrics"});
     }
 

@@ -4,6 +4,7 @@ import User from "../models/User.model.js";
 import Agent from "../models/Agent.model.js";
 import MetricPoint from "../models/MetricPoint.model.js";
 import { connectTestDB, closeTestDB, clearTestDB } from "./setup.js";
+import logger from "../utils/logger.js";
 
 let adminToken;
 let agentId;
@@ -23,7 +24,7 @@ beforeEach( async () => {
         .post('/api/auth/login')
         .send({ email: 'admin@dash.com', password: 'admin123' });
 
-    console.log("loginRes.body:", loginRes.body);
+    logger.debug("dashboard.test.js -> beforeEach -> loginRes", {body: loginRes.body});
 
     adminToken = loginRes.body.access;
 

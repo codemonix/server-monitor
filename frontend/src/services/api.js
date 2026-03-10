@@ -1,9 +1,10 @@
 import axios from "axios";
 import { getAccessToken } from "../context/tokenManager.js";
+import { logger } from "../utils/log.js";
 
 const API_BASE = (window?.config?.API_BASE_URL || import.meta.env.VITE_API_BASE);
 
-console.log("api.js -> API_BASE:", API_BASE);
+logger.debug("api.js -> API_BASE:", API_BASE);
 
 
 const api = axios.create({ 

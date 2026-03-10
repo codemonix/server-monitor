@@ -19,7 +19,7 @@ export async function generateEnrollToken(createdBy, ttlMin = 60) {
     const token = randToken();
     const expiresAt = new Date(Date.now() + ttlMin * 60 * 1000);
     const enrollmentToken = await EnrollmentToken.create({ token, createdBy, expiresAt });
-    logger("enrollment.service.js -> Generated enrollment token:", enrollmentToken);
+    logger.info("enrollment.service.js -> Generated enrollment token created successfully");
     return enrollmentToken;
 }
 
@@ -47,7 +47,7 @@ export async function verifyEnrollmentToken(token, consume = true) {
                 { new: true }
             );
             if (!enrollment) {
-                logger("enrollment.service.js -> verifyEnrollmentToken -> Enrollment token not found or already used");
+                logger.info("enrollment.service.js -> verifyEnrollmentToken -> Enrollment token not found or already used");
                 return null;
             }
             return enrollment;
@@ -56,7 +56,7 @@ export async function verifyEnrollmentToken(token, consume = true) {
             return await EnrollmentToken.findOne(query);
         }
     } catch (error) {
-        logger("enrollment.service.js -> Error verifying enrollment token:", error.message);
+        logger.error("enrollment.service.js -> Error verifying enrollment token:", {error: error.message});
         return null;
     }
 }
@@ -66,7 +66,7 @@ export async function getEnrollmentTokensList() {
         const enrollmentTokens = await EnrollmentToken.find();
         return enrollmentTokens
     } catch (error) {
-        logger("enrollment.service.js -> getEnrollmentTokensList -> error:", error.message);
+        logger.error("enrollment.service.js -> getEnrollmentTokensList -> error:", {error: error.message});
         throw error;
     }
 

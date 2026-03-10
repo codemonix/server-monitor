@@ -11,8 +11,8 @@ import { fetchMetricPoints } from "../redux/thunks/metricPointsThunk.js";
 
 import { updateFilters, setPage, setPageSize } from "../redux/slices/metricsPointsSlice.js";
 import { selectMetricRows } from "../redux/selectors/metricRowsSelector.js";
+import { logger } from "../utils/log.js";
 
-// let effecyCounter = 0;
 
 
 export default function ServersMertricsPage() {
@@ -23,13 +23,9 @@ export default function ServersMertricsPage() {
     const { items: agents = [], hiddenAgentIds = [] } = useSelector(state => state.metrics);
     const rows = useSelector(selectMetricRows);
 
-    console.log("ServersMertricsPage.jsx -> rows.length:", rows.length);
-
-    // const selected = useSelector(state => state.metricPoints);
-    // console.log("ServersMertricsPage.jsx -> selected:", selected);
+    logger.debug("ServersMertricsPage.jsx -> rows.length:", rows.length);
 
     const [ filterPanelOpen, setFilterPanelOpen ] = useState(false);
-    // const [ paginationModel, setPaginationModel ] = useState({ page: storePage, pageSize: storePageSize });
 
     const paginationModel = useMemo(() => ({ 
         page: storePage, pageSize: storePageSize 
@@ -42,7 +38,6 @@ export default function ServersMertricsPage() {
 
     // auto-select agents
     useEffect(() => {
-        // main page B
         if (agents.length > 0)  {
             // Visible IDs
             const visibleIds = agents
@@ -54,7 +49,6 @@ export default function ServersMertricsPage() {
     },[agents.length, hiddenAgentIds, dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        // main page C
         const promise = dispatch(fetchMetricPoints({ 
             page: storePage, 
             limit: storePageSize, 
@@ -65,12 +59,6 @@ export default function ServersMertricsPage() {
             promise.abort();
         }
     },[dispatch, storePage, storePageSize, filters]); 
-
-    // sync external page changes from store to pagination model
-
-    // useEffect(() => {
-    //     setPaginationModel({ page: storePage, pageSize: storePageSize });
-    // }, [storePage, storePageSize]);
 
     const openFilterPanel = () => { setFilterPanelOpen(true); };
     const closeFilterPanel = () => setFilterPanelOpen(false);
@@ -85,7 +73,6 @@ export default function ServersMertricsPage() {
         if ( model.pageSize !== undefined && model.pageSize !== storePageSize ) dispatch(setPageSize(model.pageSize));
     }, [dispatch, storePage, storePageSize]);
 
-    //     console.log("ServersMertricsPage.jsx -> points:", points);
     return (
         <Box sx={{ p: 2 }} >
             <Paper sx={{ p: 1, mb: 2 }} >

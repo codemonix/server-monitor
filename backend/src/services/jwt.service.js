@@ -49,12 +49,13 @@ export const agentJwtService = {
 
     async refreshTokens(refreshToken) {
         try {
+            logger.info("jwt.service.js -> refreshTokens -> refreshing agent tokens")
             const decoded = jwt.verify(refreshToken, AGENT_SECRET);
-            logger("jwt.service.js -> refreshTokens decode:", decoded);
+            logger.debug("jwt.service.js -> refreshTokens decode:", decoded);
             const agent = await Agent.findById(decoded.sub);
-            logger("jwt.services.js -. refreshToken decoded agent:", agent);
+            logger.debug("jwt.services.js -. refreshToken decoded agent:", agent);
             if (!agent) {
-                logger("jwt.service.js -> Invalid refresh token");
+                logger.debug("jwt.service.js -> Invalid refresh token");
                 return null;
             }
 
@@ -66,25 +67,25 @@ export const agentJwtService = {
             await agent.save();
             return { accessToken: newAccess, refreshToken: newRefresh };
         } catch (error) {
-            logger("jwt.service.js -> Error refreshing agent tokens:", error.message);
+            logger.error("jwt.service.js -> Error refreshing agent tokens:", {error: error.message});
             return null;
         }
     },
 
     async verifyAccess(token) {
+        logger.info("jwt.service.js -> verifyAccess -> verifying agent access token")
         try {
             const decoded = jwt.verify(token, AGENT_SECRET);
             const agent = await Agent.findById(decoded.sub);
             if (!agent) {
-                logger("jwt.service.js -> Invalid access token");
+                logger.debug("jwt.service.js -> Invalid access token");
                 return null;
             }
             return decoded;
         } catch (error) {
-            logger("jwt.service.js -> token verification failed", error.message);
+            logger.error("jwt.service.js -> token verification failed", {error: error.message});
             return null;
         }
     }
 
 }
- 

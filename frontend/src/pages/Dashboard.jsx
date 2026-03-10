@@ -11,12 +11,8 @@ import { fetchServerStats } from "../redux/thunks/metricsThunks.js";
 export default function Dashboard() {
     const dispatch = useDispatch();
     const { items: allServers, hiddenAgentIds } = useSelector((state) => state.metrics);
-
-    // const state = useSelector((state) => state); // Should be removed later
-    
-    
-    // const [servers, setServers] = useState([]);
     logger.info("Dashboard rendered");
+
     // http poll every 10 second
     useEffect(() => {
         dispatch(fetchServerStats())
@@ -31,7 +27,7 @@ export default function Dashboard() {
 
     const [ selectedServer, setSelectedServer ] = useState(null);
 
-    console.log("Dashboard.jsx -> filtered servers:", selectedServer);
+    logger.debug("Dashboard.jsx -> filtered servers:", selectedServer);
 
     return (
         <Box display='flex' flexDirection='column' minHeight='95vh' sx={{ bgcolor: 'grey.500', p: 1 }} >

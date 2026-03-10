@@ -18,12 +18,11 @@ export const setAccessToken = ( token, ttlSeconds ) => {
         token !== 'null'
     ) {
         accessToken = token;
-        // console.log("tokenManager -> setAccessToken - token set:", token);
         logger.debug("tokenManager -> setAccessToken - token set:", !!token);
         accessTokenExpiry = Date.now() + ( ttlSeconds ? ttlSeconds * 1000 : 15 * 60 * 1000 );
         return true;
     }
-    console.warn("Invalid token, abort setting to memory")
+    logger.warn("Invalid token, abort setting to memory")
     return false;
 };
 
@@ -34,7 +33,7 @@ export const setAccessToken = ( token, ttlSeconds ) => {
  */
 
 export const getAccessToken = () => {
-    console.log("tokenManager -> getAccessToken -> accessToken:", accessToken)
+    logger.info("tokenManager -> getAccessToken -> accessToken:", !!accessToken)
     if (
         typeof accessToken !== 'string' ||
         !accessToken ||

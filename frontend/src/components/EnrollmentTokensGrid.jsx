@@ -24,7 +24,6 @@ export default function EnrollmentTokensGrid({tokens, loading}) {
             columns={columns}
             loading={loading}
             getRowId={(row) => row._id}
-            // pageSize={10}
             
             paginationModel={gridState.paginationModel}
             onPaginationModelChange={gridState.setPaginationModel}
@@ -57,7 +56,7 @@ export default function EnrollmentTokensGrid({tokens, loading}) {
                 },
 
                 '& .MuiDataGrid-columnHeaderTitle': {
-                    fontWeight: 700,   // ← applies correctly here!
+                    fontWeight: 700,   
                 },
 
                 '& .zebra-even': {

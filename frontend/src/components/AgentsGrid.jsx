@@ -4,9 +4,10 @@ import dayjs from "dayjs";
 import { useMemo  } from "react";
 import { statusColors } from "../utils/getAgentStatus.js";
 import usePresistentGridState from "../hooks/usePersistentGridState.js";
+import { logger } from "../utils/log.js";
 
 export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSelectionModelChange }) {
-    console.log("AgentsGrid.jsx -> agents:", agents);
+    logger.debug("AgentsGrid.jsx -> agents:", agents);
 
     const gridState = usePresistentGridState('agentsGrid');
 

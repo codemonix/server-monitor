@@ -1,52 +1,50 @@
 
 const LEVELS = { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3 };
-let currentLevel = LEVELS.DEBUG;
+
+const isProd = import.meta.env.PROD;
+
+const isDevMode = localStorage.getItem('srm_dev_mode') === 'true';
+
+let currentLevel = (isProd && !isDevMode) ? LEVELS.WARN : LEVELS.DEBUG;
 
 export function setLogLevel(level) {
   if (LEVELS[level] !== undefined) currentLevel = LEVELS[level];
   else console.warn(`[Logger] Invalid log level: ${level}`);
 }
 
-function getCallerInfo() {
-  try {
-    const err = new Error();
-    const stackLines = err.stack.split('\n').slice(3); // skip logger frames
-    const callerLine = stackLines[0] || '';
-    const match = callerLine.match(/at (.+) \((.+):(\d+):(\d+)\)/) || stackLines[0].match(/at (.+):(\d+):(\d+)/);
-    if (match) {
-      if (match.length === 5) {
-        const [, func, file, line] = match;
-        return `${file}:${line} (${func})`;
-      } else if (match.length === 4) {
-        const [, file, line] = match;
-        return `${file}:${line}`;
-      }
-    }
-  } catch (e) {
-    console.error("Error getting caller info:", e);
-    return 'unknown';
-  }
-  return 'unknown';
-}
 
-function formatMessage(level, message, context) {
-  const timestamp = new Date().toISOString();
-  const caller = getCallerInfo();
-  const ctx = context ? `[${context}]` : '';
-  return `${timestamp} ${level} ${ctx} [${caller}]: ${message}`;
+function formatMessage(level, message) {
+  const timestamp = new Date().toLocaleTimeString();
+  return `[${timestamp}] ${level} : ${message}`;
 }
 
 export const logger = {
   debug: (message, context) => {
-    if (currentLevel <= LEVELS.DEBUG) console.debug(formatMessage('DEBUG', message, context));
+    if (currentLevel <= LEVELS.DEBUG) {
+      context !== undefined
+        ? console.log(formatMessage('DEBUG', message), context)
+        : console.log(formatMessage('DEBUG', message));
+    }
   },
   info: (message, context) => {
-    if (currentLevel <= LEVELS.INFO) console.info(formatMessage('INFO', message, context));
+    if (currentLevel <= LEVELS.INFO) {
+      context !== undefined
+        ? console.info(formatMessage('INFO', message), context)
+        : console.info(formatMessage('INFO', message));
+    }
   },
   warn: (message, context) => {
-    if (currentLevel <= LEVELS.WARN) console.warn(formatMessage('WARN', message, context));
+    if (currentLevel <= LEVELS.WARN) {
+      context !== undefined
+        ? console.warn(formatMessage('WARN', message), context)
+        : console.warn(formatMessage('WARN', message));
+    }
   },
   error: (message, context) => {
-    if (currentLevel <= LEVELS.ERROR) console.error(formatMessage('ERROR', message, context));
+    if (currentLevel <= LEVELS.ERROR) {
+      context !== undefined
+        ? console.error(formatMessage('ERROR', message), context)
+        : console.error(formatMessage('ERROR', message));
+    }
   },
 };

@@ -1,4 +1,7 @@
 import { getDashboards } from "./wsRegistery.js";
+import logger from "../../utils/logger.js";
+
+
 
 
 function transformMetricData(data) {
@@ -28,14 +31,14 @@ export function broadcastToDashboards(data) {
 
     // console.log("broadcastManager.js -> broadcastToDashboards -> data:", transformedData);
     const dashboards = getDashboards();
-    console.log("broadcastManager.js -> broadcasting to dashboards count:", dashboards.size);
+    logger.debug("broadcastManager.js -> broadcasting to dashboards", {count: dashboards.size});
     const json = JSON.stringify(transformedData);
     
-    console.log("brodcastManager.js -> broadcasting data -> outside if:", json)
+    logger.debug("brodcastManager.js -> broadcasting data -> outside if:", {json})
 
     for ( const ws of dashboards ) {
         if ( ws.readyState === ws.OPEN ) {
-            console.log("brodcastManager.js -> broadcasting data -> inside if:", json)
+            logger.debug("brodcastManager.js -> broadcasting data -> inside if:", {json})
             ws.send(json);
         }
     }

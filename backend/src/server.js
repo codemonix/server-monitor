@@ -2,8 +2,6 @@ import app from './app.js';
 import logger from './utils/logger.js';
 import connectDB from './config/db.config.js';
 import http from 'http';
-// import { initWsHub } from './services/wsHub.service.js';
-// import { initWsHub } from './services/ws/ws.Hub.js';
 import { initWsHub } from './services/ws/wsHub.service.js';
 
 connectDB();
@@ -14,7 +12,7 @@ initWsHub(server);
 const PORT = process.env.PORT || 4000;
 
 server.listen(PORT, () => {
-    logger(`API + WS running on: ${PORT}`);
+    logger.info(`API + WS running on: ${PORT}`);
 });
 
 export default server;

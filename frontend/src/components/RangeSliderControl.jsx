@@ -56,8 +56,6 @@ export default function RangeSliderControl({
                 value={value}
                 min={min}
                 max={max}
-                // step={step}
-                // valueLabelDisplay="on"
                 onChange={(_, newValue) => onChange(newValue)}
             />
 

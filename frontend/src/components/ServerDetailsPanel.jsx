@@ -6,11 +6,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectChartData } from "../redux/slices/serverDetailsSlice.js";
 import { fetchServerDetails } from "../redux/thunks/serverDetailsThunks.js";
 import MultiMetricChart from "./MultiMetricChart.jsx";
+import { formatTimeSeconds } from "../utils/format.js";
+import { logger } from "../utils/log.js";
 
 
 export default function ServerDetailsPanel({ server }) {
 
-    console.log("ServerDetailsPanel.jsx -> server:", server);
+    logger.debug("ServerDetailsPanel.jsx -> server:", server);
 
     const dispatch = useDispatch();
     const chartData = useSelector(selectChartData);
@@ -34,19 +36,6 @@ export default function ServerDetailsPanel({ server }) {
         }
     }, [server, dispatch]);
 
-    function formatUpTime(seconds) {
-
-
-        console.log("ServerDetailsPanel.jsx -> formatUpTime -> seconds:", seconds);
-        const days = Math.floor(seconds / (3600 * 24));
-        seconds %= 3600 * 24;
-        const hours = Math.floor(seconds / 3600);
-        seconds %= 3600;
-        const minutes = Math.floor(seconds / 60);
-
-        return seconds ? `${days}d ${hours}h ${minutes}m` : "--";
-    }
-
     if (!server) {
         return (
             <Paper sx={{ p: 2 }} >
@@ -57,7 +46,7 @@ export default function ServerDetailsPanel({ server }) {
             </Paper>
         );
     }
-    console.log("ServerDetailsPanel.jsx -> chartData:", chartData);
+    logger.debug("ServerDetailsPanel.jsx -> chartData:", chartData);
     return (
         <Paper sx={{ p: 1 }}>
             <Box display='flex' justifyContent='space-between' alignContent={'center'}  >
@@ -72,7 +61,7 @@ export default function ServerDetailsPanel({ server }) {
                 <Typography variant='body2'>Status: {server.status}</Typography>
                 <Typography variant='body2'>CPU Model: {server.cpuModel} </Typography>
                 <Typography variant='body2'>Memory: {(server.memTotal / (1000 * 1000 * 1000)).toFixed(2)} GB</Typography>
-                <Typography variant='body2'>Uptime: {formatUpTime(server.upTime)}</Typography>
+                <Typography variant='body2'>Uptime: {formatTimeSeconds(server.upTime)}</Typography>
             </Box>
 
             <Box mt={0.5} >

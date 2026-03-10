@@ -6,25 +6,9 @@ import connectDB from '../config/db.config.js';
 
 const BATCH_SIZE = parseInt(process.env.BACKFILL_BATCH_SIZE || '5000', 10);
 
-function calculatePercentiles(used, total) {
-    if ( used == null || total == null ) return null;
-    const t = Number(total);
-    if ( t === 0 ) return 0;
-    return Number(((Number(used) / t ) * 100).toFixed(2));
-} 
-
 
 async function run() {
     await connectDB();
-
-    // const query = {
-    //     $or: [
-    //         { memPercent: { $exists: false}},
-    //         { memPercent: null },
-    //         { diskPercent: { $exists: false }},
-    //         { diskPercent: null }
-    //     ]
-    // };
 
     const query = {
         ts: { $exists: false },

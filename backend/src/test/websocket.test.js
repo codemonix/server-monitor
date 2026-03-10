@@ -8,6 +8,7 @@ import EnrollmentToken from '../models/EnrollmentToken.model.js';
 import User from '../models/User.model.js';
 import MetricPoint from '../models/MetricPoint.model.js';
 import { connectTestDB, closeTestDB, clearTestDB } from './setup.js';
+import logger from '../utils/logger.js';
 
 let server;
 let port;
@@ -59,32 +60,6 @@ beforeEach(async () => {
     agentId = res.body.agentId;
 })
 
-// Cleanup DB between tests
-// afterEach(async () => {
-//     await clearTestDB();
-
-//     // Recreate data for next test
-//     const admin = await User.create({ email: 'admin@ws.com', role: 'admin' });
-//     const tokenDoc = await EnrollmentToken.create({
-//         token: 'ws-enroll-token',
-//         createdBy: admin._id,
-//         expiresAt: new Date(Date.now() + 60000),
-//         used: false
-//     });
-
-//     // Enroll an agent to get valid token
-//     const res = await request(app)
-//         .post('/api/agents/enroll')
-//         .send({
-//             token: 'ws-enroll-token',
-//             name: 'Ws-Test-Agent',
-//             host: 'Ws-Test-Host',
-//             ip: '127.0.0.1'
-//         });
-
-//     agentToken = res.body.accessToken;
-//     agentId = res.body.agentId;
-// });
 
 // Teardown
 afterAll(async () => {
@@ -118,7 +93,7 @@ describe('WebSocker Server', () => {
             client.on('error', reject);
         });
 
-        console.log("authResponse:", authResponse);
+        logger.debug("websocket.test.js -> authResponse:", {authResponse});
 
         expect(authResponse).toMatchObject({ type: 'auth_success', role: 'agent' });
         client.close();

@@ -8,33 +8,33 @@ export function initWsHub(server) {
     const wss = new WebSocketServer({ noServer: true });
 
     server.on('upgrade', (req, socket, head) => {
-        logger("wsHub.service.js -> incomming req.")
+        logger.info("wsHub.service.js -> incomming req.")
         const { pathname } = url.parse(req.url);
         // logger("wsHub.service.js -> pathname:", pathname)
         if ( pathname === '/ws' ) {
-            console.log("pathname correct");
+            logger.debug("pathname correct");
             wss.handleUpgrade(req, socket, head, (ws) => {
-                console.log("wsHub.service.js -> upgrade handled, emitting connection");
+                logger.debug("wsHub.service.js -> upgrade handled, emitting connection");
                 wss.emit('connection', ws, req);
             });
         } else {
-            console.log("pathname incorrect");
+            logger.debug("pathname incorrect");
             socket.destroy();
         }
     });
 
     wss.on('connection', (ws, req) => {
-        console.log("wsHub.service.js -> on connection called.");
+        logger.info("wsHub.service.js -> on connection called.");
         ws.isAuthenticated = false;
         const authTimer = setTimeout(() => {
             if (!ws.isAuthenticated) {
-                console.log("wsHub.service.js -> close timer fired, **** CLOSING CONNECTION ****", Date.now());
+                console.debug("wsHub.service.js -> close timer fired, **** CLOSING CONNECTION ****", {date: Date.now()});
                 ws.close(4001, "Authentication timeout");
             };
         }, 10000);
 
         ws.clearAuthTimer = () => {
-            console.log("wsHub.service.js -> clearAuthTimer called.");
+            logger.debug("wsHub.service.js -> clearAuthTimer called.");
             clearTimeout(authTimer);
         }
 
@@ -42,5 +42,5 @@ export function initWsHub(server) {
 
     });
 
-    console.log('✅ WebSocket Hub initialized at /ws');
+    logger.info('✅ WebSocket Hub initialized at /ws');
 }

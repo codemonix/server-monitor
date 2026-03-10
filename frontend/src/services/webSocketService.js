@@ -16,31 +16,31 @@ class WebSocketService {
     }
 
     connect (token) {
-        console.log("dashboard try to connect")
+        logger.info("dashboard try to connect")
         if (this.socket?.readyState === WebSocket.OPEN ||
             this.socket?.readyState === WebSocket.CONNECTING ||
             this.isConnecting
         ) {
-            console.log("WebSocket already connected.");
+            logger.warn("webSocketService.js -> connect -> WebSocket already connected.");
             return;
         };
 
         this.isConnecting = true;
         this.token = token;
-        console.log("webSocketService.js -> connect -> WS_URL:", WS_URL);
+        logger.debug("webSocketService.js -> connect -> WS_URL:", WS_URL);
         this.socket = new WebSocket(WS_URL);
 
         this.socket.onopen = () => {
-            console.log("webSocketService.js -> opeening ws connection");
+            logger.info("webSocketService.js -> opeening ws connection");
             this.isConnecting = false;
             this.send({ type: 'auth', token, role: 'dashboard' });
-            console.log("webSocketSrvice.js -> auth message sent:", !!token);
+            logger.debug("webSocketSrvice.js -> auth message sent:", !!token);
 
             this.flushMessageQueue();
         };
 
         this.socket.onmessage = (event) => {
-            console.log("webSocketService.js -> message received:", event.data);
+            logger.debug("webSocketService.js -> message received:", !!event.data);
             const msg = JSON.parse(event.data);
 
             if (msg.type === 'auth_success') {
@@ -52,53 +52,47 @@ class WebSocketService {
             if (msg.type === 'metricUpdate') {
                 const { agentId, payload } = msg;
 
-                console.log("[WS] webSocketService.js -> metricUpdate -> agentId:", agentId)
+                logger.info("[WS] webSocketService.js -> metricUpdate -> agentId:", agentId)
 
                 const { lastLoadedServerId } = store.getState().serverDetails;
                 if ( lastLoadedServerId === agentId ) {
-                    console.log("[WS] websocketService.js -> update selected server:", agentId);
+                    logger.debug("[WS] websocketService.js -> update selected server:", agentId);
                     store.dispatch(updateServerDetailMetric({
                         agentId,
                         ...payload,
                     }))
                 } else {
-                    console.log("[WS] webSocketService.js -> updateServerDetail skipped!");
+                    logger.warn("[WS] webSocketService.js -> updateServerDetail skipped!");
                 }
-                console.log("[WS] webSocketService.js -> metricUpdate received:", msg);
+                logger.debug("[WS] webSocketService.js -> metricUpdate received:", msg);
                 store.dispatch(updateMetrics({ ...msg.payload }));
-                // logger.info("[WS] webSocketService.js -> metricUpdate:", { agentId, payload });
             }
         };
 
         this.socket.onclose = (event) => {
-            console.warn("[WS] webSocketService.js -> disconnected:", event);
-            // console.warn("[WS] connection closed, retrying in 5s", event.reason);
+            logger.warn("[WS] webSocketService.js -> disconnected:", event);
             this.authenticated = false;    
             this.isConnecting = false;
-            // setTimeout(() => this.reconnect(), this.reconnectInterval);
         };
 
         this.socket.onerror= (error) => {
-            // logger.error("[WS] Error:", error);
-            console.error("[WS] Error:", error);
+            logger.error("[WS] Error:", error.message);
             this.isConnecting = false;
-            // this.emit('error', error);
             this.socket.close();
         };
     }
 
-    // onOpen (cb) ( this.litener)
 
     reconnect () {
         if (this.token && (!this.socket || this.socket.readyState === WebSocket.CLOSED)) {
-            console.log("Reconnecting WebSocket...");
+            logger.info("Reconnecting WebSocket...");
             this.connect(this.token);
         }
     }
 
     disconnect () {
         if (this.socket) {
-            console.log("webSocketService.js -> disconnect called ...");
+            logger.debug("webSocketService.js -> disconnect called ...");
             this.socket.close(1000, "Manual close");
             this.socket = null;
             this.authenticated = false;
@@ -110,20 +104,20 @@ class WebSocketService {
     send (data) {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(JSON.stringify(data));
-            console.log("webSocketService.js -> sent auth message:", data.type);
+            logger.debug("webSocketService.js -> sent auth message:", data.type);
         } else {
-            console.warn("Canot send data, connection error.", this.socket ? this.socket.readyState : 'no socket');
+            logger.warn("Canot send data, connection error.", this.socket ? this.socket.readyState : 'no socket');
         }
     }
 
     flushMessageQueue() {
         if ( this.messageQueue.length === 0 ) return;
-        console.log("Flushing message queue:", this.messageQueue.length);
+        logger.info("Flushing message queue:", this.messageQueue.length);
         while ( this.messageQueue.length > 0 ) {
             const msg = this.messageQueue.shift();
             if ( this.socket && this.socket.readyState === WebSocket.OPEN ) {
                 this.socket.send(JSON.stringify(msg));
-                console.log("Sent queued message:", msg.type);
+                logger.info("Sent queued message:", msg.type);
             }
         }
     }

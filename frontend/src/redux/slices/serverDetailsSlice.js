@@ -1,5 +1,6 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { fetchServerDetails } from "../thunks/serverDetailsThunks.js";
+import { logger } from "../../utils/log.js";
 
 const MAX_METRIC_SIZE = 500;
 
@@ -13,9 +14,7 @@ const serverDetailsSlice = createSlice({
     },
     reducers: {
         updateServerDetailMetric: (state, action) => {
-            // if (!state.metrics) return;
-            // state.metrics.push(action.payload);
-            console.log("serverDetailSlice.js -> updateServerDetailMetric -> action.payload.agentId:", action.payload.agentId);
+            logger.debug("serverDetailSlice.js -> updateServerDetailMetric -> action.payload.agentId:", action.payload.agentId);
 
             if (!state.metrics) {
                 state.metrics = [];
@@ -47,7 +46,7 @@ const serverDetailsSlice = createSlice({
                 state.status = "loading";
             })
             .addCase(fetchServerDetails.fulfilled, (state, action) => {
-                console.log("serverDetailsSlice.js -> fetchServerDetails.fulfilled -> action.payload:", action.payload);
+                logger.debug("serverDetailsSlice.js -> fetchServerDetails.fulfilled -> action.payload:", action.payload);
                 state.loading = false;
                 state.metrics = action.payload.metrics || [];
                 state.lastLoadedServerId = action.payload.serverId;

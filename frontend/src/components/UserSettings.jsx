@@ -9,6 +9,7 @@ import UsersGrid from "./UsersGrid.jsx";
 import CreateUserDialog from "./CreateUserDialog.jsx";
 import EditUserRoleDialog from "./EditUserRoleDialog.jsx";
 import ResetPasswordDialog from "./ResetPasswordDialog.jsx";
+import { logger } from "../utils/log.js";
 
 
 
@@ -28,10 +29,10 @@ export default function UserSettings () {
         setLoading(true);
         try {
             const { data } = await api.get('/users');
-            console.log("UserSettings.jsx -> fetchUsers -> data:", data);
+            logger.debug("UserSettings.jsx -> fetchUsers -> data:", data);
             setUsers(data);
         } catch (error) {
-            console.error("Failed to fetch users:", error.message);
+            logger.error("Failed to fetch users:", error.message);
         } finally {
             setLoading(false);
         }
@@ -51,7 +52,7 @@ export default function UserSettings () {
     const handleResetPassword = useCallback((user) => setResetTarget(user), []);
 
     
-    console.log("UserSettings.jsx -> users:", users);
+    logger.debug("UserSettings.jsx -> users:", users);
 
 
     return (

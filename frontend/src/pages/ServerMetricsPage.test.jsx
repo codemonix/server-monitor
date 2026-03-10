@@ -14,13 +14,6 @@ vi.mock("../components/ServerMetricsGrid.jsx", () => ({
     )
 }));
 
-// // Mock thunks
-// vi.mock('../redux/thunks/metricPointsThunk.js', () => ({
-//     fetchMetricPoints: vi.fn(() => ({ type: 'mock/fetchPoints' }))
-// }));
-// vi.mock('../redux/thunks/metricsThunks.js', () => ({
-//     fetchServerStats: vi.fn(() => ({ type: 'mock/fetchStats' }))
-// }));
 
 describe('ServerMetricsPage', () => {
     const mockAgents = [{ _id: 'a1', name: 'Web 01', status: 'online' }];

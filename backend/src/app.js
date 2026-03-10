@@ -13,6 +13,7 @@ import settingsRoutes from './routes/settings.route.js';
 import userRoutes from './routes/user.route.js';
 
 import { startCleanupJob } from './services/cleanup.service.js';
+import logger from './utils/logger.js';
 
 startCleanupJob();
 
@@ -37,7 +38,9 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
-app.use(morgan('dev'));
+
+const morganFormat = process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
+app.use(morgan(morganFormat, { stream: logger.stream }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/agents', agentRoutes);

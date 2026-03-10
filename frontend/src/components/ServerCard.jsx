@@ -3,6 +3,10 @@ import { Card, CardContent, Typography, Box, Chip } from "@mui/material";
 import { Speed, Storage, Memory, AccessTime, AvTimer } from "@mui/icons-material";
 import { StatusPill } from "./StatusPill.jsx";
 import { statusColors } from "../utils/getAgentStatus.js";
+import { logger } from "../utils/log.js";
+import { formatTimeSeconds } from "../utils/format.js";
+
+
 
 
 function correctNumToTwo(value) {
@@ -17,7 +21,7 @@ export default function ServerCard({ server, selected, onClick }) {
     const diskPercent = server.diskTotal ? (server.diskUsed / server.diskTotal) *100 : 0;
 
 
-    console.log("ServerCard.jsx -> statusColor:", statusColors[server.status]);
+    logger.debug("ServerCard.jsx -> statusColor:", statusColors[server.status]);
 
     return (
         <Card 
@@ -41,21 +45,19 @@ export default function ServerCard({ server, selected, onClick }) {
                 </Box>
                 <Box display='flex' alignItems='center' gap={1}>
                     <Speed />
-                    {/* <AnimatedPill value={server.cpu} label='{val}%' /> */}
                     <StatusPill value={`${server.cpu}`} label={`${correctNumToTwo(server.cpu)}%`} />
                 </Box>
                 <Box display='flex' alignItems='center' gap={1} >
                     <Memory />
-                    <StatusPill value={memPercent} label={`${correctNumToTwo(server.memUsed / (1024 ** 3))}GB / ${correctNumToTwo(server.memTotal / (2^1e9))}GB` } />
+                    <StatusPill value={memPercent} label={`${correctNumToTwo(server.memUsed / (1024 ** 3))}GB / ${correctNumToTwo(server.memTotal / (1024 ** 3))}GB` } />
                 </Box>
                 <Box display='flex' alignItems='center' gap={1} >
                     <Storage />
-                    <StatusPill value={diskPercent} label={`${correctNumToTwo(server.diskUsed / (1024 ** 3))}GB / ${correctNumToTwo(server.diskTotal / (2^1e9))}GB` } />
+                    <StatusPill value={diskPercent} label={`${correctNumToTwo(server.diskUsed / (1024 ** 3))}GB / ${correctNumToTwo(server.diskTotal / (1024 ** 3))}GB` } />
                 </Box>
                 <Box display='flex' alignItems='center' gap={1} >
                     <AccessTime />
-                    {/* <Timer /> */}
-
+                    <Typography variant="subtitle1" >{formatTimeSeconds(server.upTime)}</Typography>
                 </Box>
             </CardContent>
         </Card>
