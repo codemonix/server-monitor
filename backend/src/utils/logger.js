@@ -12,7 +12,7 @@ const levels = {
 
 let currentConfig = {
     level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-    // level: 'debug',
+    level: 'info',
     saveToFile: true,
     retentionDays: '14d',
     maxFileSize: '20m'
