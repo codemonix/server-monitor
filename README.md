@@ -94,3 +94,6 @@ Metric Math Accuracy: Update ServerCard.jsx to use a standard constant for GB co
 
 
 Demo Optimization: Fully integrate the isDemoMode configuration to provide a one-click login for recruiters on the landing page. 
+
+To Enabling Frontend Debug console log: localStorage.setItem('srm_dev_mode', 'true')
+To Disable it localStorage.removeItem('srm_dev_mode')

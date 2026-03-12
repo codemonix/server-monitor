@@ -7,10 +7,6 @@ import { verifyEnrollmentToken, generateEnrollToken, getEnrollmentTokensList } f
 import logger from '../utils/logger.js';
 import { removeAgent, getAgent } from '../services/ws/wsRegistery.js';
 
-// function randToken(bytes = 24) {
-//     return crypto.randomBytes(bytes).toString('hex');
-// }
-
 /** 
  * 
  * @param {Request} req 
@@ -72,7 +68,6 @@ export async function refreshAgentToken(req, res) {
             logger.info("agent.controller.js -> Refresh token required");
             return res.status(400).json({ error: 'refresh token required' });
         }
-        // const newTokens = await agentJwtService.refreshTokens(refreshToken);
         const result = await refreshSession(refreshToken);
         
         if (!result) {

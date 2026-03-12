@@ -12,7 +12,6 @@ export default function ServerMetricsToolbar({ onOpenFilterPanel }) {
     const dispatch = useDispatch();
 
     const { from, to, search } = useSelector(state => state.metricPoints.filters);
-    // const search = useSelector(state => state.metricPoints.search);
     const handleSearch = useMemo(() => debounce((value) => {
         dispatch(updateFilters({ search: value }));
     }, 350), [dispatch]);
