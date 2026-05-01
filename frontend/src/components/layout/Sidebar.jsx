@@ -1,28 +1,49 @@
-import { Drawer, Box, Divider, Button, Toolbar } from "@mui/material";
+import { Drawer, Box, Divider, Button, Typography } from "@mui/material";
+import LogoutIcon from '@mui/icons-material/Logout';
 import SidebarNav from "./SidebarNav";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 
-const drawerWidth = 220;
-
-export default function Sidebar({ mobileOpen, onClose }) {
+export default function Sidebar({ mobileOpen, onClose, drawerWidth }) {
   const { user } = useAuth();
   const nav = useNavigate();
 
-  const buttonStyle = { borderRadius: '4px', color: '#fff', bgcolor: 'rgba(94, 76, 76, 1)', '&:hover': { bgcolor: 'rgba(133, 19, 19, 1)' }, mb: "5px" };
-  const content = (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: 'grey.500'  }}>
-      <Toolbar />
-      <SidebarNav />
+  const drawerContent = (
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <Box sx={{ height: 64, display: 'flex', alignItems: 'center', px: 3 }}>
+          <Typography variant="h6" fontWeight="800" color="primary" letterSpacing={1}>
+              SRM
+          </Typography>
+          <Typography variant="h6" fontWeight="400" sx={{ ml: 1, color: 'text.secondary' }}>
+              Console
+          </Typography>
+      </Box>
       <Divider />
-      <Box sx={{ mt: "auto" }}>
+      
+      <Box sx={{ flexGrow: 1, py: 2 }}>
+          <SidebarNav />
+      </Box>
+      
+      <Divider />
+      
+      <Box sx={{ p: 2 }}>
         {user && (
           <Button
             variant="outlined"
-            // color="error"
+            color="inherit"
             fullWidth
+            startIcon={<LogoutIcon />}
             onClick={() => nav('/logout', { replace: true })}
-            sx={ buttonStyle }
+            sx={{
+                justifyContent: 'flex-start',
+                color: 'text.secondary',
+                borderColor: 'divider',
+                '&:hover': {
+                    borderColor: 'text.primary',
+                    color: 'text.primary',
+                    bgcolor: 'action.hover'
+                }
+            }}
           >
             Logout
           </Button>
@@ -32,32 +53,38 @@ export default function Sidebar({ mobileOpen, onClose }) {
   );
 
   return (
-    <>
-      {/* Mobile */}
+    <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
+      {/* Mobile Drawer */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
         onClose={onClose}
         ModalProps={{ keepMounted: true }}
         sx={{
-          display: { xs: "block", sm: "none" },
-          "& .MuiDrawer-paper": { width: drawerWidth },
+          display: { xs: "block", md: "none" }, // Changed from sm to md
+          "& .MuiDrawer-paper": { boxSizing: 'border-box', width: drawerWidth },
         }}
       >
-        {content}
+        {drawerContent}
       </Drawer>
 
-      {/* Desktop */}
+      {/* Desktop Drawer */}
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: "none", sm: "block" },
-          "& .MuiDrawer-paper": { width: drawerWidth, boxSizing: "border-box" },
+          display: { xs: "none", md: "block" }, // Changed from sm to md
+          "& .MuiDrawer-paper": { 
+            boxSizing: 'border-box', 
+            width: drawerWidth, 
+            borderRight: '1px solid', 
+            borderColor: 'divider',
+            backgroundImage: 'none' 
+          },
         }}
         open
       >
-        {content}
+        {drawerContent}
       </Drawer>
-    </>
+    </Box>
   );
 }

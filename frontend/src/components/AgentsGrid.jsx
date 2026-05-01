@@ -1,54 +1,42 @@
 import { DataGrid } from "@mui/x-data-grid";
-import { Paper } from "@mui/material";
+import { Paper, Chip } from "@mui/material";
 import dayjs from "dayjs";
-import { useMemo  } from "react";
+import { useMemo } from "react";
 import { statusColors } from "../utils/getAgentStatus.js";
 import usePresistentGridState from "../hooks/usePersistentGridState.js";
-import { logger } from "../utils/log.js";
 
 export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSelectionModelChange }) {
-    logger.debug("AgentsGrid.jsx -> agents:", agents);
-
     const gridState = usePresistentGridState('agentsGrid');
 
     const columns = useMemo(() => [
-
-        { field: 'name', headerName: 'Name', width: 200, headerAlign: 'center', align: 'center' },
-        { field: 'host', headerName: 'Host', width: 200, headerAlign: 'center', align: 'center' },
-        { field: 'ip', headerName: 'IP Adress', width: 120, headerAlign: 'center', align: 'center' },
+        { field: 'name', headerName: 'Name', width: 200 },
+        { field: 'host', headerName: 'Host', width: 200 },
+        { field: 'ip', headerName: 'IP Address', width: 140 },
         { 
             field: 'status', 
             headerName: 'Status', 
-            width: 80, 
-            headerAlign: 'center', 
-            align: 'center',
+            width: 120, 
             renderCell: (params) => {
-                const color = statusColors[params.value] || '#999';
                 return (
-                    <div
-                        style={{
-                            backgroundColor: color,
-                            color: 'white',
-                            fontWeight: 600,
-                            width: '100%',
-                            pointerEvents: 'none',
-                            // height: '100%',
-                        }}
-                    >
-                        {params.value}
-                    </div>
-                )
+                    <Chip 
+                        label={params.value} 
+                        size="small" 
+                        sx={{
+                            fontWeight: 700,
+                            fontSize: '0.75rem',
+                            backgroundColor: statusColors[params.value] || 'grey.500',
+                            color: 'rgba(255, 255, 255, 0.9)', 
+                            textTransform: 'uppercase'
+                        }} 
+                    />
+                );
             }
         },
-
-
         {
             field: 'ts',
             headerName: 'Last Update',
             flex: 1,
-            width: 150,
-            headerAlign: 'center',
-            align: 'center',
+            minWidth: 180,
             valueFormatter: (params) => {
                 if (!params || params.value === null ) return '-';
                 return dayjs(params.value).format('YYYY-MM-DD HH:mm:ss');
@@ -57,70 +45,64 @@ export default function AgentsGrid({ agents, loading, rowSelectionModel, onRowSe
     ], []);
 
     return (
-        <Paper sx={{ height: 'calc(100vh - 200px)', width: '100%', backgroundColor: 'yellow' }} >
+        // Removed the hardcoded yellow background and added subtle elevation
+        <Paper elevation={1} sx={{ height: 'calc(100vh - 210px)', width: '100%', overflow: 'hidden' }}>
             <DataGrid 
                 rows={agents}
                 columns={columns}
-                pageSize={10}
                 loading={loading}
                 getRowId={(row) => row._id}
                 checkboxSelection
+                disableRowSelectionOnClick
                 
-                // rowSelection={rowSelectionModel}
                 rowSelectionModel={rowSelectionModel}
                 onRowSelectionModelChange={onRowSelectionModelChange}
-                initialState={{
-                    pagination: { paginationModel: { pageSize: 10 }},
-                    columns: { orderedFields: gridState.orderedFields}
-                }}
-
+                
                 paginationModel={gridState.paginationModel}
                 onPaginationModelChange={gridState.setPaginationModel}
-
                 sortModel={gridState.sortModel}
                 onSortModelChange={gridState.setSortModel}
-
                 columnVisibilityModel={gridState.columnVisibilityModel}
                 onColumnVisibilityModelChange={gridState.setColumnVisibilityModel}
-
-                // columnOrder={gridState.columnOrder}
-                onColumnOrderChange={(p) => gridState.setOrferedFields(p.columnField)}
-
+                onColumnOrderChange={(p) => gridState.setColumnOrder(p.columnField)}
+                
                 pageSizeOptions={[10, 25, 50]}
 
-                /** Zebra Striping */
                 getRowClassName={(params) => {
                     return params.indexRelativeToCurrentPage % 2 === 0 ? 'zebra-even' : 'zebra-odd'
                 }}
 
-
-            sx={{
-                height: '100%',
-                '& .MuiDataGrid-columnHeader': {
-                    display: 'flex',
-                    alignItems: 'center',
-                    color: 'white',
-                    justifyContent: 'center',
-                    backgroundColor: '#666666',
-                },
-
-                '& .MuiDataGrid-columnHeaderTitle': {
-                    fontWeight: 700,   // ← applies correctly here!
-                },
-
-                '& .zebra-even': {
-                    backgroundColor: '#fafafa',
-                },
-
-                '& .zebra-odd': {
-                    backgroundColor: '#e5e5e5',
-                },
-
-                '& .MuiDataGrid-row:hover': {
-                    backgroundColor: '#e2e2e2',
-                }
-            }}
+                sx={{
+                    border: 'none',
+                    '& .MuiDataGrid-columnHeaders': {
+                        // Dynamic header background based on mode
+                        backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : theme.palette.grey[100],
+                        color: 'text.primary',
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                    },
+                    '& .MuiDataGrid-columnHeaderTitle': {
+                        fontWeight: 600,   
+                    },
+                    '& .MuiDataGrid-cell': {
+                        borderColor: 'divider',
+                    },
+                    '& .MuiDataGrid-footerContainer': {
+                        borderTop: '1px solid',
+                        borderColor: 'divider',
+                    },
+                    // Dynamic Zebra Striping
+                    '& .zebra-even': {
+                        backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'background.default' : '#fafafa',
+                    },
+                    '& .zebra-odd': {
+                        backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'background.paper' : '#ffffff',
+                    },
+                    '& .MuiDataGrid-row:hover': {
+                        backgroundColor: 'action.hover',
+                    }
+                }}
             />
         </Paper>
-    )
+    );
 }

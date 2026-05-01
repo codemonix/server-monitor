@@ -5,28 +5,23 @@ import { logger } from "../utils/log.js";
 import AgentsGrid from "../components/AgentsGrid.jsx";
 import AgentsActionBar from "../components/AgentsActionBar.jsx";
 import { fetchServerStats } from "../redux/thunks/metricsThunks.js";
-import { Tabs, Tab, Box, Typography, Container} from "@mui/material";
+import { Tabs, Tab, Box, Paper } from "@mui/material";
 import EnrollmentTokensGrid from "../components/EnrollmentTokensGrid.jsx";
 import AddAgentDialog from "../components/AddAgentDialog.jsx";
 
-
 export default function AgentsPage() {
     const dispatch = useDispatch();
-    const { items: allAgents =[], hiddenAgentIds = [] } = useSelector((state) => state.metrics);
+    const { items: allAgents = [], hiddenAgentIds = [] } = useSelector((state) => state.metrics);
     const agents = allAgents.filter(agent => !hiddenAgentIds.includes(agent._id));
 
-    const loading = useSelector((state) => state.metrics.state === "loading");
+    const loading = useSelector((state) => state.metrics.status === "loading"); // Fixed 'state' to 'status'
 
-    const [ selectedAgents, setSelectedAgents ] = useState({ type: 'include', ids: new Set() });
-
-    const [ tab, setTab ] = useState(0);
-    const [ enrollmentTokens, setEnrollmentTokens ] = useState([]);
-
-    const [ isTokenDialogOpen, setIsTokenDialogOpen ] = useState(false);
-    const [ newToken, setNewToken ] = useState('');
-    const [ copyStatus, setCopyStatus ] = useState(''); // 'success', 'error' , ...
-
-    logger.info("Rendering AgentsPage");
+    const [selectedAgents, setSelectedAgents] = useState({ type: 'include', ids: new Set() });
+    const [tab, setTab] = useState(0);
+    const [enrollmentTokens, setEnrollmentTokens] = useState([]);
+    const [isTokenDialogOpen, setIsTokenDialogOpen] = useState(false);
+    const [newToken, setNewToken] = useState('');
+    const [copyStatus, setCopyStatus] = useState(''); 
 
     useEffect(() => {
         dispatch(fetchServerStats());
@@ -37,33 +32,29 @@ export default function AgentsPage() {
 
     const handleRefresh = async () => {
         dispatch(fetchServerStats());
-    }
+    };
 
     const fetchEnrollmentTokens = async () => {
         try {
             const res = await api.get('/agents/enrollment-tokens');
-            logger.debug("AgentsPage.jsx -> fetchEnrollmentTokens -> res.data:", res.data);
             setEnrollmentTokens(res.data);
         } catch (error) {
             logger.error("AgentsPage.jsx -> fetchEnrollmentTokens -> error:", error.message);
         }
-    }
+    };
 
     const handleAdd = async () => {
         try {
             const res = await api.post('/agents/enrollment');
-            logger.debug("AgentsPage.jsx -> handleAdd -> res.data.token:", !!res.data.token);
-            const createdToken = res.data.token;
-            setNewToken(createdToken);
+            setNewToken(res.data.token);
             setIsTokenDialogOpen(true);
-            setCopyStatus('')
-            if ( tab === 1 ) fetchEnrollmentTokens();
+            setCopyStatus('');
+            if (tab === 1) fetchEnrollmentTokens();
         } catch (error) {
             logger.error("AgentsPage.jsx -> handleAdd -> error creating enrollment token:", error.message);
             alert("Failed to create enrollment token.");
         }
-        logger.debug("AgentsPage.jsx -> handleAdd -> Add agent clicked");
-    }
+    };
 
     const handleCopy = useCallback(() => {
         if (navigator.clipboard) {
@@ -72,32 +63,30 @@ export default function AgentsPage() {
                     setCopyStatus('success');
                     setTimeout(() => setCopyStatus(''), 2000);
                 })
-                .catch (error => {
+                .catch(error => {
                     logger.error("Failed to copy token", error.message);
                     setCopyStatus('error');
-                })
+                });
         } else {
             alert("Clipboard access denied or not supported by browser");
             setCopyStatus('error');
         }
-    }, [newToken])
+    }, [newToken]);
 
     const handleCloseDialog = () => {
         setIsTokenDialogOpen(false);
         setNewToken('');
-    }
+    };
 
-    const handleTabChange = ( _, newValue ) => {
+    const handleTabChange = (_, newValue) => {
         setTab(newValue);
-    }
+    };
 
     const handleDeleteSelected = async () => {
-        logger.debug("AgentsPage.jsx -> handleDeleteSelected -> selectedAgents:", selectedAgents);
-        if (!selectedAgents || selectedAgents.length === 0) return;
+        if (!selectedAgents || selectedAgents.ids.size === 0) return;
         if (!window.confirm(`Delete ${selectedAgents.ids.size} selected agent(s) and related metrics?`)) return;
 
         try {
-            //delete in parallel and reload
             await Promise.all([...selectedAgents.ids].map((id) => api.delete(`/agents/${id}`)));
             setSelectedAgents({ type: 'include', ids: new Set() });
             dispatch(fetchServerStats());
@@ -106,42 +95,45 @@ export default function AgentsPage() {
         }
     };
 
-    logger.debug("AgentsPage.jsx -> selectedAgents:", selectedAgents);
-
     return (
-        <Box sx={{ p: 2 }} >
-            <AgentsActionBar 
-                onRefresh={handleRefresh}
-                onAdd={handleAdd}
-                selected={[...selectedAgents.ids]}
-                onDeleteSelected={handleDeleteSelected}
-                disabledDelete={selectedAgents.ids.size === 0}
-            />
-            <Box sx={{ width: '100%' }} >
-                <Tabs value={tab} onChange={handleTabChange} >
-                    <Tab label="Agents" />
-                    <Tab label="Enrollment Tokens" />
-                </Tabs>
-                { tab === 0 && (<Box sx={{ mt: 1, height: 'calc(100vh - 200px)'  }}  >
-                    
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 96px)' }}>
+            {/* Header / Action Bar */}
+            <Paper elevation={0} sx={{ px: 2, py: 1, mb: 2, bgcolor: 'transparent' }}>
+                <AgentsActionBar 
+                    onRefresh={handleRefresh}
+                    onAdd={handleAdd}
+                    onDeleteSelected={handleDeleteSelected}
+                    disabledDelete={selectedAgents.ids.size === 0}
+                />
+            </Paper>
+
+            {/* Main Content Area */}
+            <Paper elevation={1} sx={{ width: '100%', flexGrow: 1, overflow: 'hidden' }}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
+                    <Tabs value={tab} onChange={handleTabChange} indicatorColor="primary" textColor="primary">
+                        <Tab label="Active Agents" sx={{ fontWeight: 600 }} />
+                        <Tab label="Enrollment Tokens" sx={{ fontWeight: 600 }} />
+                    </Tabs>
+                </Box>
+                
+                <Box sx={{ p: 2, height: 'calc(100% - 48px)' }}>
+                    {tab === 0 && (
                         <AgentsGrid 
                             agents={agents}
                             loading={loading}
                             rowSelectionModel={selectedAgents}
-                            onRowSelectionModelChange={(newSelection) => {
-                                console.log("AgentsPage.jsx -> onRowSelectionModelChange -> newSelection:", newSelection);
-                                setSelectedAgents(newSelection);
-                        }}
-                    />
-                    
-                </Box>)}
-                { tab === 1 && (<Box sx={{ mt: 1 }}  >
+                            onRowSelectionModelChange={(newSelection) => setSelectedAgents(newSelection)}
+                        />
+                    )}
+                    {tab === 1 && (
                         <EnrollmentTokensGrid 
                             tokens={enrollmentTokens}
                             loading={loading}
                         />
-                </Box>)}
-            </Box>
+                    )}
+                </Box>
+            </Paper>
+
             <AddAgentDialog 
                 isDialogOpen={isTokenDialogOpen}
                 handleCloseDialog={handleCloseDialog}
@@ -151,5 +143,4 @@ export default function AgentsPage() {
             />
         </Box>
     );
-
 }

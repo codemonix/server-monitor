@@ -1,43 +1,53 @@
-import { Box } from "@mui/material";
-
-
-
-
+import { Box, Typography } from "@mui/material";
 
 export function StatusPill({ value, label }) {
+    const safeValue = Math.min(100, Math.max(0, Number(value) || 0));
+    
     return (
         <Box 
             sx={{
                 position: 'relative',
-                px: 1.5,
-                py: 0.25,
-                borderRadius: '9999px',
-                bgcolor: 'grey.200',
-                color: 'black',
-                fontSize: '0.75rem',
-                fontWeight: 500,
-                lineHeight: 1.2,
-                minWidth: '60px',
-                textAlign: 'center',
+                flexGrow: 1,
+                height: 22,
+                borderRadius: 1,
+                bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'grey.200',
                 overflow: "hidden",
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
             }}
         >
-            {/* fill */}
             <Box 
                 sx={{
                     position: 'absolute',
                     top: 0,
                     left: 0,
                     bottom: 0,
-                    width: `${value}%`,
-                    bgcolor: `hsl(${(1 - value / 100) * 120}, 100%, 40%)`,
+                    width: `${safeValue}%`,
+                    bgcolor: `hsl(${(1 - safeValue / 100) * 120}, 75%, 40%)`, // Slightly muted the saturation and lightness of the bar
                     transition: 'width 0.6s ease, background-color 0.6s ease',
+                    opacity: 0.85,
                 }}
             />
-            {/* Label */}
-            <Box sx={{ position: 'relative', zIndex: 1 }} >
+            
+            <Typography 
+                variant="caption" 
+                sx={{ 
+                    position: 'relative', 
+                    zIndex: 1, 
+                    fontWeight: 600,
+                    // Use the theme's primary text color (off-white in dark mode) instead of pure #fff
+                    color: (theme) => theme.palette.text.primary,
+                    // Drastically reduced the text shadow spread so it doesn't look blurry
+                    textShadow: (theme) => theme.palette.mode === 'dark' 
+                        ? '0px 1px 1px rgba(0,0,0,0.6)' 
+                        : '0px 1px 1px rgba(255,255,255,0.7)',
+                    lineHeight: 1,
+                    letterSpacing: '0.3px' // Slight letter spacing makes small numbers much more legible
+                }}
+            >
                 {label}
-            </Box>
+            </Typography>
         </Box>
-    )
+    );
 }

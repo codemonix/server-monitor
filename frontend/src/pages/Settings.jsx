@@ -15,7 +15,7 @@ export default function Settings() {
 
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }} >
+    <Container maxWidth="lg" disableGutters >
       <Paper square sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }} >
         <Tabs value={tab} onChange={(_, v) => setTab(v)} indicatorColor="primary" textColor="primary" >
           <Tab label="Profile" />

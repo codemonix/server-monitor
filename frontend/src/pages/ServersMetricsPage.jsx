@@ -74,8 +74,8 @@ export default function ServersMertricsPage() {
     }, [dispatch, storePage, storePageSize]);
 
     return (
-        <Box sx={{ p: 2 }} >
-            <Paper sx={{ p: 1, mb: 2 }} >
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 96px)'}} >
+            <Paper elevation={1} sx={{ p: 1, mb: 2 }} >
                 <ServerMetricsToolbar onOpenFilterPanel={openFilterPanel} />
             </Paper>
 

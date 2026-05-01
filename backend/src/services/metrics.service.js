@@ -130,6 +130,7 @@ export async function getServersWithInitStat() {
             load1: { $ifNull: [ "$latestMetric.load1", null ] },
             load5: { $ifNull: [ "$latestMetric.load5", null ] },
             load15: { $ifNull: [ "$latestMetric.load15", null ] },
+            upTime: { $ifNull: [ "$latestMetric.upTime", null ] },
             ts: { $ifNull: [ "$latestMetric.ts", "$latestMetric.createdAt" , null ] },
         }
     }

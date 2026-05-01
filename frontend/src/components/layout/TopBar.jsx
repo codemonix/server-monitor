@@ -1,97 +1,105 @@
-import {
-  Box,
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Button,
+import { 
+  Box, AppBar, Toolbar, Typography, IconButton, Button, Divider 
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CircularIcon from "@mui/icons-material/Circle";
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import SelectAgentsDialog from "../SelectAgentsDialog.jsx";
+import { toggleTheme } from "../../redux/slices/settingsSlice.js";
 
 const getPageTitle = (pathname) => {
   if (pathname.startsWith('/agents')) return 'Agents';
-  if (pathname.startsWith('/servers')) return 'Servers Metrics';
+  if (pathname.startsWith('/servers')) return 'Server Metrics';
   if (pathname.startsWith('/settings')) return 'Settings';
-  return 'Dashboard'
+  return 'Overview';
 }
 
-export default function TopBar({ onMenuClick }) {
-  const [ dialogOpen, setDialogOpen ] = useState(false);
+export default function TopBar({ onMenuClick, drawerWidth }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const location = useLocation();
-  const { items, hiddenAgentIds } = useSelector(state => state.metrics);
+  const dispatch = useDispatch();
   
-  const visisbleAgents = items.filter( a => !hiddenAgentIds.includes(a._id))
-
+  const { items, hiddenAgentIds } = useSelector(state => state.metrics);
+  const themeMode = useSelector(state => state.settings.themeMode);
+  
+  const visibleAgents = items.filter(a => !hiddenAgentIds.includes(a._id));
   const currentTitle = getPageTitle(location.pathname);
 
   const counts = {
-    online: visisbleAgents.filter(a => a.status === 'online').length,
-    offline: visisbleAgents.filter(a => a.status === 'offline').length,
-    warning: visisbleAgents.filter(a => a.status === 'warning').length,
+    online: visibleAgents.filter(a => a.status === 'online').length,
+    offline: visibleAgents.filter(a => a.status === 'offline').length,
+    warning: visibleAgents.filter(a => a.status === 'warning').length,
   };
 
   return (
     <>
-      <AppBar position="fixed" sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}>
-        <Toolbar sx={{ bgcolor: '#606b7c', display: "flex", justifyContent: "space-between" }}>
+      <AppBar 
+        position="fixed" 
+        elevation={0}
+        sx={{ 
+            width: { md: `calc(100% - ${drawerWidth}px)` }, // Changed from sm to md
+            ml: { md: `${drawerWidth}px` },                 // Changed from sm to md
+            bgcolor: 'background.paper',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            color: 'text.primary'
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
 
-          {/* leftside logo / menu */}
-          <Box display='flex' alignItems='center' >
+          <Box display='flex' alignItems='center'>
             <IconButton
               color="inherit"
               edge="start"
               onClick={onMenuClick}
-              sx={{ mr: 2, display: { sm: "none" } }}
+              sx={{ mr: 2, display: { md: "none" } }} // Changed from sm to md
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              SRM | {currentTitle}
+            <Typography variant="h6" noWrap fontWeight="600">
+              {currentTitle}
             </Typography>
           </Box>
 
-          {/* Right side: indicators & Button */}
-          <Box display="flex" flexDirection="row" alignItems="center" gap={3} >
-            {/* Status indicators */}
-            <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap={0.5}  >
-              <Box display="flex" alignItems="center" gap={0.5} title="Online" sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 0.75, py: 1, borderRadius: 2 }}>
-                <CircularIcon sx={{ fontSize: 12, color: '#4caf50' }} />
-                <Typography variant="body2" fontWeight="bold" >{counts.online}</Typography>
+          <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
+            
+            <Box display={{ xs: 'none', md: 'flex' }} gap={1.5}>
+              <Box display="flex" alignItems="center" gap={0.5} title="Online Agents">
+                <CircularIcon color="success" sx={{ fontSize: 12 }} />
+                <Typography variant="body2" fontWeight="bold">{counts.online}</Typography>
               </Box>
-              <Box display="flex" alignItems="center" gap={0.5} title="Warning" sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 0.75, py: 1, borderRadius: 2 }}>
-                <CircularIcon sx={{ fontSize: 12, color: '#ff9800' }} />
-                <Typography variant="body2" fontWeight="bold" >{counts.warning}</Typography>
+              <Box display="flex" alignItems="center" gap={0.5} title="Warning">
+                <CircularIcon color="warning" sx={{ fontSize: 12 }} />
+                <Typography variant="body2" fontWeight="bold">{counts.warning}</Typography>
               </Box>
-              <Box display="flex" alignItems="center" gap={0.5} title="Offline" sx={{ bgcolor: 'rgba(0,0,0,0.2)', px: 0.75, py: 1, borderRadius: 2 }} >
-                <CircularIcon sx={{ fontSize: 12, color: '#f44336' }} />
-                <Typography variant="body2" fontWeight="bold" >{counts.offline}</Typography>
+              <Box display="flex" alignItems="center" gap={0.5} title="Offline">
+                <CircularIcon color="error" sx={{ fontSize: 12 }} />
+                <Typography variant="body2" fontWeight="bold">{counts.offline}</Typography>
               </Box>
             </Box>
-            {/* Select Button */}
+
+            <Divider orientation="vertical" flexItem sx={{ my: 1.5, display: { xs: 'none', md: 'block' } }} />
+
             <Button 
-              variant="contained"
+              variant="outlined"
               size="small"
               onClick={() => setDialogOpen(true)}
-              sx={{
-                bgcolor: 'rgba(255,255,255,0.15)',
-                textTransform: 'none',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.25)' }
-              }}
             >
-              Select Agents
+              Filter Agents
             </Button>
+
+            <IconButton onClick={() => dispatch(toggleTheme())} color="inherit" size="small" edge="end">
+                {themeMode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
 
       <SelectAgentsDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
-
     </>
-    
   );
 }
