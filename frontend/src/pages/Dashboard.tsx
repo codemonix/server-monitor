@@ -10,7 +10,7 @@ import { fetchServerStats } from "../redux/thunks/metricsThunks.js";
 
 export default function Dashboard() {
     const dispatch = useAppDispatch();
-    const { items: allServers, hiddenAgentIds } = useAppSelector((state) => state.metrics);
+    const { items: allServers, hiddenAgentIds, status } = useAppSelector((state) => state.metrics);
 
     useEffect(() => {
         dispatch(fetchServerStats());
@@ -44,9 +44,14 @@ export default function Dashboard() {
                             />
                         </Grid>
                     ))}
-                    {servers.length === 0 && (
+                    {status === "loading" && servers.length === 0 && (
                         <Typography color="text.secondary" sx={{ p: 3, width: '100%', textAlign: 'center' }}>
-                            No agents currently available or selected.
+                            Loading agents...
+                        </Typography>
+                    )}
+                    {status !== "loading" && servers.length === 0 && (
+                        <Typography color="text.secondary" sx={{ p: 3, width: '100%', textAlign: 'center' }}>
+                            No agents found.
                         </Typography>
                     )}
                 </Grid>

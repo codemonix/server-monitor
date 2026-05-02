@@ -39,7 +39,8 @@ describe('Dashboard Page', () => {
             preloadedState: {
                 metrics: {
                     items: mockServers,
-                    hiddenAgentIds: []
+                    hiddenAgentIds: [],
+                    status: "succeeded",
                 }
             }
         });
@@ -48,25 +49,40 @@ describe('Dashboard Page', () => {
         expect(screen.getByText('Server B')).toBeInTheDocument();
     });
 
-    it('shows "No agent selected" when list is empty', () => {
+    it('shows "No agents found" when list is empty after loading', () => {
         renderWithProviders(<Dashboard />, {
             preloadedState: {
                 metrics: {
                     items: [],
-                    hiddenAgentIds: []
+                    hiddenAgentIds: [],
+                    status: "succeeded",
                 }
             }
         });
         expect(
-            screen.getByText(/No agents currently available or selected/i)
+            screen.getByText(/No agents found/i)
         ).toBeInTheDocument();
+    });
+
+    it('shows a loading message while agents are loading', () => {
+        renderWithProviders(<Dashboard />, {
+            preloadedState: {
+                metrics: {
+                    items: [],
+                    hiddenAgentIds: [],
+                    status: "loading",
+                }
+            }
+        });
+        expect(screen.getByText(/Loading agents\.\.\./i)).toBeInTheDocument();
     });
     it('opens the details panel when a server is clicked', async () => {
         renderWithProviders(<Dashboard />, {
             preloadedState: {
                 metrics: {
                     items: mockServers,
-                    hiddenAgentIds: []
+                    hiddenAgentIds: [],
+                    status: "succeeded",
                 },
                 serverDetails: {
                     serverDetails: { metrics: [] }
@@ -87,7 +103,8 @@ describe('Dashboard Page', () => {
             preloadedState: {
                 metrics: {
                     items: [],
-                    hiddenAgentIds: []
+                    hiddenAgentIds: [],
+                    status: "idle",
                 }
             }
         });
