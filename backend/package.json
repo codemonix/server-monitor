@@ -2,12 +2,13 @@
   "name": "server-monitor-backend",
   "version": "1.1.0",
   "type": "module",
-  "main": "server.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "seed": "node src/utils/seedAdmin.js",
-    "migrate": "node src/migrations/backfillPercentages.js",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "dev": "nodemon --exec tsx src/server.ts",
+    "seed": "tsx src/utils/seedAdmin.ts",
+    "migrate": "tsx src/migrations/backfillPercentages.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "start:dev": "docker compose -f ../docker-compose.dev.yml up monitor-db -d && echo 'Waiting for DB...' && sleep 5 && nodemon server.js",
@@ -37,9 +38,19 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.13.0",
+    "@types/supertest": "^6.0.2",
+    "@types/ws": "^8.5.14",
     "mongodb-memory-server": "^11.0.1",
     "nodemon": "^3.1.10",
     "supertest": "^7.2.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
     "vitest": "^4.0.18"
   }
 }
