@@ -32,7 +32,7 @@ export async function listServers() {
 }
 
 export async function getServerSummery(id) {
-    const { data } = await api.get(`/servers/${id}/summery`);
+    const { data } = await api.get(`/servers/${id}/summary`);
     return data ;
 }
 

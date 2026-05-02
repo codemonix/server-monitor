@@ -217,16 +217,29 @@ export async function getFilteredMetrics({
         const regex = new RegExp(safeSearch, 'i');
 
         // find agents matching the search term
-        const matchingAgents = await Agent.find( {name: regex} ).select('_id').lean();
+        const matchingAgents = await Agent.find({
+            $or: [
+                { name: regex },
+                { host: regex },
+                { ip: regex },
+                { tags: regex },
+            ],
+        })
+            .select('_id')
+            .lean();
         const matchingAgentIds = matchingAgents.map(a => a._id);
 
         if (matchingAgentIds.length === 0) {
             return { items: [], total: 0 };
         }
 
-        match.agent = match.agent
-            ? { $in: matchingAgentIds.filter(id => match.agent.$in.includes(id)) }
-            : { $in: matchingAgentIds };
+        // If agentIds filter is already applied, intersect safely by value.
+        if (match.agent?.$in) {
+            const selected = new Set((match.agent.$in as any[]).map((id) => String(id)));
+            match.agent = { $in: matchingAgentIds.filter((id) => selected.has(String(id))) };
+        } else {
+            match.agent = { $in: matchingAgentIds };
+        }
     }
 
     const pipeline: mongoose.PipelineStage[] = [
