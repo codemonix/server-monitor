@@ -1,0 +1,67 @@
+import * as userServices from '../services/user.service.js';
+import logger from '../utils/logger.js';
+
+export async function listUsers(req,res) {
+    try {
+        const users = await userServices.getAllUsers();
+        res.json(users);
+    } catch (error) {
+        logger.error("user.controller.js -> listUsers ->", {error: error.message});
+        res.status(500).json({ error: 'Failed to list users' });  
+    }
+}
+
+export async function createUser(req,res) {
+    try {
+        const user = await userServices.createNewUser(req.body, req.user.email);
+        res.status(201).json(user);
+    } catch (error) {
+        logger.error("user.controller.js -> createUser ->", {error: error.message});
+        const status = error.message === 'User (email) already exists' ? 400 : 500;
+        res.status(status).json({ error: error.message });  
+    }
+}
+
+export async function deleteUser(req,res) {
+    try {
+        await userServices.deleteUserById(req.params.id, req.user.sub);
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        logger.error("user.controller.js -> deleteUser ->", {error: error.message});
+        const status = error.message.includes("cannot") ? 403 : 500;
+        res.status(status).json({ error: error.message });  
+    }
+}
+
+export async function updateUserRole(req,res) {
+    try {
+        const { role } = req.body;
+        if (!['admin', 'viewer'].includes(role)) {
+            return res.status(400).json({ error: 'Invalid role' });
+        }
+        await userServices.updateUserRole(req.params.id, role, req.user.sub);
+        res.json({ message: 'User role updated successfully' });
+    } catch (error)  {
+        logger.error("user.controller.js -> updateUserRole ->", {error: error.message});
+        const status = error.message.includes("cannot") ? 403 : 500;
+        res.status(status).json({ error: error.message });  
+    }
+    
+}
+
+export async function resetPassword(req, res) {
+    try {
+        const { password } = req.body;
+        if ( !password || password.length < 6 ) {
+            return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+        
+        }
+
+        await userServices.resetUserPassword(req.params.id, password, req.user.sub);
+        res.json({ message: 'Password reset successfully' });
+    } catch (error) {
+        logger.error("user.controller.js -> resetPassword ->", {error: error.message});
+        const status = error.message.includes("cannot") ? 403 : 500;
+        res.status(status).json({ error: error.message });  
+    }
+}
